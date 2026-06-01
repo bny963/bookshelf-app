@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('book_id')->constrained()->onDelete('cascade'); // 本が消えたらレビューも消える
-            $table->integer('rating'); // 評価（1〜5）
-            $table->text('comment');   // レビュー本文（長文テキスト）
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
+            $table->integer('rating');
+            $table->text('comment');
             $table->timestamps();
+
+            // 1人が同じ本に2回以上レビューを書けないようにDBレベルでブロックする
+            $table->unique(['user_id', 'book_id']);
         });
     }
 
