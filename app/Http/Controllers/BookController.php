@@ -33,12 +33,10 @@ class BookController extends Controller
         if ($request->filled('genre_id')) {
             $query->where('genre_id', $request->input('genre_id'));
         }
+        
+        $books = Book::with('genre')->paginate(10);
 
-        // 5. ページネーションを適用して取得（1ページ12件など、Bladeのレイアウトに合わせて調整してください）
-        $books = $query->latest()->paginate(12)->withQueryString();
-
-        // 6. 既存の一覧画面Bladeにデータを渡して表示
-        return view('books.index', compact('books', 'genres'));
+        return view('books.index', compact('books'));
     }
     /**
      * 【仮追加】書籍登録画面の表示
