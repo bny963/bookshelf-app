@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Book extends Model
 {
@@ -14,11 +15,12 @@ class Book extends Model
         return $this->hasMany(Review::class);
     }
 
-    /**
-     * 💡 ジャンルとのリレーション（所属）も、もし未定義ならここに追記しておくと安全です
-     */
     public function genre()
     {
         return $this->belongsTo(Genre::class);
+    }
+    public function favoritedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'book_user')->withTimestamps();
     }
 }

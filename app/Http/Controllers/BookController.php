@@ -41,19 +41,22 @@ class BookController extends Controller
         return view('books.index', compact('books', 'genres'));
     }
     /**
-     * 【仮追加】書籍登録画面の表示（後ほど実装します）
+     * 【仮追加】書籍登録画面の表示
      */
     public function create()
     {
         return '書籍登録画面（開発中）';
     }
 
-    public function show(Book $book) // 👈 引数を (Book $book) に変更します
+    public function show(Book $book)
     {
-        // レビューとその投稿ユーザー、ジャンルを一緒に読み込む
-        $book->load('reviews.user', 'genre');
+        $book->load(['reviews.user', 'genre']);
 
-        // 既存の詳細画面Blade（books.show）にデータを渡して表示！
+        if (auth()->check()) {
+           
+            auth()->user()->refresh()->load('favoriteBooks');
+        }
+
         return view('books.show', compact('book'));
     }
 }
