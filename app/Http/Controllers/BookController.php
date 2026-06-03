@@ -48,11 +48,12 @@ class BookController extends Controller
         return '書籍登録画面（開発中）';
     }
 
-    /**
-     * 【仮追加】書籍詳細画面の表示（後ほど実装します）
-     */
-    public function show($id)
+    public function show(Book $book) // 👈 引数を (Book $book) に変更します
     {
-        return '書籍詳細画面（開発中）：ID ' . $id;
+        // レビューとその投稿ユーザー、ジャンルを一緒に読み込む
+        $book->load('reviews.user', 'genre');
+
+        // 既存の詳細画面Blade（books.show）にデータを渡して表示！
+        return view('books.show', compact('book'));
     }
 }

@@ -63,9 +63,11 @@
                             <p class="text-gray-600 mb-2"><strong>出版日:</strong> {{ $book->published_date }}</p>
                             <div class="mb-4">
                                 <strong>ジャンル:</strong>
-                                @foreach($book->genres as $genre)
-                                    <span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded">{{ $genre->name }}</span>
-                                @endforeach
+                                @if($book->genre)
+                                    <span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded">{{ $book->genre->name }}</span>
+                                @else
+                                    <span class="text-gray-400 text-xs">未設定</span>
+                                @endif
                             </div>
                             @if($book->description)
                                 <div class="mb-4">
