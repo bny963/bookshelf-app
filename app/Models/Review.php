@@ -18,10 +18,8 @@ class Review extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function likedByUsers(): HasMany
+    public function likedByUsers(): BelongsToMany
     {
-        // 実在する「users」テーブルを指定し、IDが「-1」のものを探しにいかせます。
-        // これでデータベース側もエラーを吐かず、安全に count() が 0 になります。
-        return $this->hasMany(User::class, 'id')->where('id', -1);
+        return $this->belongsToMany(User::class, 'review_user')->withTimestamps();
     }
 }

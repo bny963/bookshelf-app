@@ -4,12 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\LikeController;
 
 Route::get('/', [BookController::class, 'index'])->name('books.index');
 Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
-// ⚠️ ナビゲーションバーのリンクエラーを防ぐための仮定義（共通）
+//  ナビゲーションバーのリンクエラーを防ぐための仮定義（共通）
 Route::get('/ranking', function () {
     return 'ランキング画面（開発中）'; })->name('ranking.index');
 Route::get('/favorites', function () {
@@ -25,14 +26,6 @@ Route::middleware('auth')->group(function () {
     // レビュー投稿の保存処理
     Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
-    // お気に入り登録・解除の処理（仮）
-    Route::post('/books/{book}/favorite', function () {
-        return 'お気に入り処理（開発中）';
-    })->name('favorites.toggle');
-
-    Route::post('/reviews/{review}/like', function () {
-        return 'いいね処理（開発中）';
-    })->name('reviews.like');
-
     Route::post('/books/{book}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    Route::post('/reviews/{review}/like', [LikeController::class, 'toggle'])->name('reviews.like');
 });
