@@ -29,11 +29,12 @@
                                     <h3 class="font-bold text-lg mb-2 text-blue-600">{{ $book->title }}</h3>
                                     <p class="text-gray-600 text-sm mb-2">{{ $book->author }}</p>
                                     <div class="flex flex-wrap gap-1">
-                                        @foreach($book->genres as $g)
-                                            <span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded {{ $g->id === $genre->id ? 'bg-blue-200 text-blue-700' : '' }}">
-                                                {{ $g->name }}
+                                        @if($book->genre)
+                                            <span
+                                                class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded {{ $book->genre_id === $genre->id ? 'bg-blue-200 text-blue-700' : '' }}">
+                                                {{ $book->genre->name }}
                                             </span>
-                                        @endforeach
+                                        @endif
                                     </div>
                                 </a>
                             @endforeach

@@ -5,16 +5,13 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\GenreController;
 
 // 1. まず一覧画面を定義
 Route::get('/', [BookController::class, 'index'])->name('books.index');
 Route::get('/books', [BookController::class, 'index']);
 
-// ナビゲーションバーのリンクエラーを防ぐための仮定義（共通）
 Route::get('/ranking', [BookController::class, 'ranking'])->name('ranking.index');
-Route::get('/genres', function () {
-    return 'ジャンル管理画面（開発中）';
-})->name('genres.index');
 
 // 2. ログイン必須のルートグループ（固定URLを上に配置）
 Route::middleware('auth')->group(function () {
@@ -27,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/books/{book}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::post('/reviews/{review}/like', [LikeController::class, 'toggle'])->name('reviews.like');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::resource('genres', GenreController::class);
 });
 
 // 3. 最後に変数を含むルート（詳細画面）
