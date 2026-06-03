@@ -48,12 +48,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Book::class, 'book_user')->withTimestamps();
     }
-    public function likedReviews(): HasMany
+    public function likedReviews(): BelongsToMany
     {
-        // 実在する「books」テーブルなどをダミーで指定し、
-        // IDが「-1」のもの（絶対に存在しない）を探しにいかせます。
-        // これにより、SQLエラーを起こさずに中身を常に「空（0件）」にできます。
-        return $this->hasMany(Book::class, 'id')->where('id', -1);
+        // 第2引数に、先ほど作成した中間テーブル名 'review_user' を明示します
+        return $this->belongsToMany(Review::class, 'review_user')->withTimestamps();
     }
 
 }

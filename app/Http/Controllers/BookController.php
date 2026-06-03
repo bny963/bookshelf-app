@@ -50,11 +50,11 @@ class BookController extends Controller
 
     public function show(Book $book)
     {
-        $book->load(['reviews.user', 'genre']);
+        $book->load(['reviews.user', 'reviews.likedByUsers', 'genre']);
 
         if (auth()->check()) {
-           
-            auth()->user()->refresh()->load('favoriteBooks');
+
+            auth()->user()->refresh()->load(['favoriteBooks', 'likedReviews']);
         }
 
         return view('books.show', compact('book'));
