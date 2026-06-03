@@ -44,9 +44,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    public function favoriteBooks()
+    public function favoriteBooks(): BelongsToMany
     {
-        return $this->belongsToMany(Book::class, 'favorites');
+        return $this->belongsToMany(Book::class, 'book_user')->withTimestamps();
     }
     public function likedReviews(): HasMany
     {
@@ -55,4 +55,5 @@ class User extends Authenticatable
         // これにより、SQLエラーを起こさずに中身を常に「空（0件）」にできます。
         return $this->hasMany(Book::class, 'id')->where('id', -1);
     }
+
 }
