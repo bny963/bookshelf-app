@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -45,5 +47,12 @@ class User extends Authenticatable
     public function favoriteBooks()
     {
         return $this->belongsToMany(Book::class, 'favorites');
+    }
+    public function likedReviews(): HasMany
+    {
+        // 実在する「books」テーブルなどをダミーで指定し、
+        // IDが「-1」のもの（絶対に存在しない）を探しにいかせます。
+        // これにより、SQLエラーを起こさずに中身を常に「空（0件）」にできます。
+        return $this->hasMany(Book::class, 'id')->where('id', -1);
     }
 }
