@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\Genre;
 use App\Http\Requests\BookSearchRequest;
 use Illuminate\Http\Request;
+use App\Http\Requests\BookRequest;
 
 class BookController extends Controller
 {
@@ -38,12 +39,38 @@ class BookController extends Controller
 
         return view('books.index', compact('books'));
     }
-    /**
-     * 【仮追加】書籍登録画面の表示
-     */
+
     public function create()
     {
-        return '書籍登録画面（開発中）';
+        $book = new Book();
+
+        $book->setRelation('genres', collect());
+
+        // ジャンル一覧を取得
+        $genres = Genre::all();
+
+        return view('books.create', compact('book', 'genres'));
+    }
+
+    public function store(BookRequest $request)
+    {
+        // すでにバリデーション＆ハイフン除去が済んだデータを受け取る
+        $validated = $request->validated();
+
+        $genreId = is_array($validated['genres']) ? ($validated['genres'][0] ?? null) : $validated['genres'];
+
+        // データベースへ保存
+        $book = Book::create([
+            'user_id' => auth()->id(),
+            'title' => $validated['title'],
+            'author' => $validated['author'],
+            'isbn' => $validated['isbn'],
+            'published_date' => $validated['published_date'],
+            'description' => $validated['description'],
+            'image_url' => $validated['image_url'],
+        ]);
+
+        return redirect()->route('books.index')->with('success', '新しい書籍を登録しました！');
     }
 
     public function show(Book $book)

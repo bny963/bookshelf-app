@@ -10,6 +10,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Book extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'user_id',        
+        'title',
+        'author',
+        'isbn',          
+        'published_date', 
+        'description',
+        'image_url',     
+    ];
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
