@@ -92,5 +92,34 @@ class BookController extends Controller
 
         return view('ranking.index', compact('rankedBooks'));
     }
-    
+    public function edit(Book $book)
+    {
+        $this->authorize('update', $book);
+
+        $genres = Genre::all();
+
+        return view('books.edit', compact('book', 'genres'));
+    }
+    public function update(Request $request, Book $book)
+    {
+        $this->authorize('update', $book);
+
+        $validated = $request->validate([
+            'title' => 'required|max:255',
+            'author' => 'required|max:255',
+            'isbn' => 'required|size:13',
+            'published_date' => 'required|date',
+            'genre_id' => 'required|exists:genres,id',
+        ]);
+
+        $book->update($validated); 
+
+        return redirect()->route('books.show', $book)->with('success', '書籍情報を更新しました。');
+    }
+    public function destroy(Book $book)
+    {
+        $this->authorize('delete', $book);
+        $book->delete();
+        return redirect()->route('books.index')->with('success', '書籍を削除しました。');
+    }
 }
