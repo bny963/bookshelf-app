@@ -115,17 +115,19 @@ class BookSeeder extends Seeder
                     'user_id' => $adminUser->id,
                     'title' => $data['title'],
                     'author' => $data['author'],
-                    'published_at' => $data['published_at'],
+                    'published_date' => $data['published_at'],
                     'description' => $data['desc'],
                     // 要件：https://placehold.co/200x300/e2e8f0/475569?text={番号} 形式
-                    'image_path' => "https://placehold.co/200x300/e2e8f0/475569?text={$num}",
+                    'image_url' => "https://placehold.co/200x300/e2e8f0/475569?text=$num",
                 ]
             );
 
             // ジャンル名の文字列からIDを引っ張ってきて同期
             $genreIds = Genre::whereIn('name', $data['genres'])->pluck('id');
-            // 要件：genres()->sync() を使用
-            $book->genres()->sync($genreIds);
+            if ($genreIds->isNotEmpty()) {
+                $book->genre_id = $genreIds->first(); // 最初のジャンルIDだけを採用
+                $book->save();
+            }
         }
     }
 }
