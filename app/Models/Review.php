@@ -22,4 +22,8 @@ class Review extends Model
     {
         return $this->belongsToMany(User::class, 'review_user')->withTimestamps();
     }
+    public function book()
+    {
+        return $this->belongsTo(Book::class);
+    }
 }
