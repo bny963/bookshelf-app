@@ -50,25 +50,21 @@ class BookController extends Controller
         return view('books.create', compact('book', 'genres'));
     }
 
-    public function store(BookRequest $request)
+    public function store(Request $request)
     {
-        // すでにバリデーション＆ハイフン除去が済んだデータを受け取る
-        $validated = $request->validated();
-
-        $genreId = is_array($validated['genres']) ? ($validated['genres'][0] ?? null) : $validated['genres'];
-
-        // データベースへ保存
-        $book = Book::create([
-            'user_id' => auth()->id(),
-            'title' => $validated['title'],
-            'author' => $validated['author'],
-            'isbn' => $validated['isbn'],
-            'published_date' => $validated['published_date'],
-            'description' => $validated['description'],
-            'image_url' => $validated['image_url'],
+        $validated = $request->validate([
+            'title' => 'required|max:255',
+            'author' => 'required|max:255',
+            'isbn' => 'required|size:13',
+            'published_date' => 'required|date',
+            'genre_id' => 'required|exists:genres,id',
         ]);
 
-        return redirect()->route('books.index')->with('success', '新しい書籍を登録しました！');
+        $book = new Book($validated);
+        $book->user_id = auth()->id();
+        $book->save();
+
+        return redirect()->route('books.index')->with('success', '書籍を登録しました。');
     }
 
     public function show(Book $book)

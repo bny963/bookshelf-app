@@ -12,13 +12,13 @@ class Book extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id',        
         'title',
         'author',
-        'isbn',          
-        'published_date', 
+        'isbn',
+        'published_date',
         'description',
-        'image_url',     
+        'image_url',
+        'genre_id',
     ];
     public function reviews(): HasMany
     {
