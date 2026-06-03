@@ -11,9 +11,7 @@ Route::get('/', [BookController::class, 'index'])->name('books.index');
 Route::get('/books', [BookController::class, 'index']);
 
 // ナビゲーションバーのリンクエラーを防ぐための仮定義（共通）
-Route::get('/ranking', function () {
-    return 'ランキング画面（開発中）';
-})->name('ranking.index');
+Route::get('/ranking', [BookController::class, 'ranking'])->name('ranking.index');
 Route::get('/favorites', function () {
     return 'お気に入り画面（開発中）';
 })->name('favorites.index');

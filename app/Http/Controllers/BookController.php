@@ -7,6 +7,7 @@ use App\Models\Genre;
 use App\Http\Requests\BookSearchRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\BookRequest;
+use Illuminate\Support\Facades\DB;
 
 class BookController extends Controller
 {
@@ -83,5 +84,15 @@ class BookController extends Controller
         }
 
         return view('books.show', compact('book'));
+    }
+    public function ranking()
+    {
+        $rankedBooks = Book::withAvg('reviews', 'rating') 
+            ->has('reviews')
+            ->orderBy('reviews_avg_rating', 'desc') 
+            ->take(10)
+            ->get();
+
+        return view('ranking.index', compact('rankedBooks'));
     }
 }
