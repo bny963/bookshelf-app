@@ -8,37 +8,34 @@ use App\Http\Requests\BookSearchRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\BookRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class BookController extends Controller
 {
     /**
      * 書籍一覧・検索画面の表示
      */
-    public function index(BookSearchRequest $request)
+    public function index(Request $request) 
     {
-        // 1. 検索用のプルダウンに使うために、全ジャンルを取得
+        // 1. ジャンル一覧を取得（絞り込み用）
         $genres = Genre::all();
 
         // 2. 書籍取得クエリの土台を作成
         $query = Book::query();
 
-        // 3. キーワード検索（タイトルまたは著者名に部分一致）
-        if ($request->filled('keyword')) {
-            $keyword = $request->input('keyword');
-            $query->where(function ($q) use ($keyword) {
-                $q->where('title', 'LIKE', "%{$keyword}%")
-                    ->orWhere('author', 'LIKE', "%{$keyword}%");
-            });
-        }
-
-        // 4. ジャンル検索（完全一致）
+        // 3. ジャンル検索（完全一致）
         if ($request->filled('genre_id')) {
             $query->where('genre_id', $request->input('genre_id'));
         }
-        
-        $books = Book::with('genre')->paginate(10);
 
-        return view('books.index', compact('books'));
+        // 4. クエリを実行して結果を取得（1ページ10件）
+        $books = $query->with('genre')->paginate(10);
+
+        // 検索条件（ジャンルID）をページネーションのリンクに引き継ぐ
+        $books->appends($request->all());
+
+        return view('books.index', compact('books', 'genres'));
     }
 
     public function create()
@@ -95,4 +92,5 @@ class BookController extends Controller
 
         return view('ranking.index', compact('rankedBooks'));
     }
+    
 }
