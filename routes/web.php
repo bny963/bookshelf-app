@@ -12,9 +12,6 @@ Route::get('/books', [BookController::class, 'index']);
 
 // ナビゲーションバーのリンクエラーを防ぐための仮定義（共通）
 Route::get('/ranking', [BookController::class, 'ranking'])->name('ranking.index');
-Route::get('/favorites', function () {
-    return 'お気に入り画面（開発中）';
-})->name('favorites.index');
 Route::get('/genres', function () {
     return 'ジャンル管理画面（開発中）';
 })->name('genres.index');
@@ -29,6 +26,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/books/{book}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::post('/reviews/{review}/like', [LikeController::class, 'toggle'])->name('reviews.like');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 });
 
 // 3. 最後に変数を含むルート（詳細画面）

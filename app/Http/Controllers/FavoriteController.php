@@ -22,4 +22,10 @@ class FavoriteController extends Controller
         
         return back()->with('success', 'お気に入りを更新しました');
     }
+    public function index()
+    {
+        $books = Auth::user()->favoriteBooks()->paginate(10);
+
+        return view('favorites.index', compact('books'));
+    }
 }
