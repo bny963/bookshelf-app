@@ -36,7 +36,7 @@ class GenreController extends Controller
     }
     public function show(Genre $genre)
     {
-        $books = $genre->books()->with('genre')->paginate(10);
+        $books = $genre->books()->with('genres')->paginate(10);
 
         return view('genres.show', compact('genre', 'books'));
     }

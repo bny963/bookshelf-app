@@ -16,23 +16,19 @@ class BookController extends Controller
     /**
      * 書籍一覧・検索画面の表示
      */
-    public function index(Request $request) 
+    public function index(Request $request)
     {
-        // 1. ジャンル一覧を取得（絞り込み用）
         $genres = Genre::all();
-
-        // 2. 書籍取得クエリの土台を作成
         $query = Book::query();
 
-        // 3. ジャンル検索（完全一致）
         if ($request->filled('genre_id')) {
-            $query->where('genre_id', $request->input('genre_id'));
+            $query->whereHas('genres', function ($q) use ($request) {
+                $q->where('genres.id', $request->input('genre_id'));
+            });
         }
 
-        // 4. クエリを実行して結果を取得（1ページ10件）
-        $books = $query->with('genre')->paginate(10);
+        $books = $query->with('genres')->paginate(10);
 
-        // 検索条件（ジャンルID）をページネーションのリンクに引き継ぐ
         $books->appends($request->all());
 
         return view('books.index', compact('books', 'genres'));
@@ -57,28 +53,31 @@ class BookController extends Controller
             'author' => 'required|max:255',
             'isbn' => 'required|size:13',
             'published_date' => 'required|date',
-            'genre_id' => 'required|exists:genres,id',
+            'genres' => 'required|array',
+            'genres.*' => 'exists:genres,id',
         ]);
 
-        $book = new Book($validated);
+        $book = Book::create($request->except('genres'));
+
         $book->user_id = auth()->id();
         $book->save();
 
-        return redirect()->route('books.index')->with('success', '書籍を登録しました。');
+        $book->genres()->sync($request->genres);
+
+        return redirect()->route('books.index')->with('success', '登録しました');
     }
 
     public function show(Book $book)
     {
-        $book->load(['reviews.user', 'reviews.likedByUsers', 'genre']);
+        $book->load(['reviews.user', 'reviews.likedByUsers', 'genres']);
 
         if (auth()->check()) {
-
             auth()->user()->refresh()->load(['favoriteBooks', 'likedReviews']);
         }
 
         return view('books.show', compact('book'));
     }
-    public function ranking()
+       public function ranking()
     {
         $rankedBooks = Book::withAvg('reviews', 'rating') 
             ->has('reviews')
@@ -105,10 +104,12 @@ class BookController extends Controller
             'author' => 'required|max:255',
             'isbn' => 'required|size:13',
             'published_date' => 'required|date',
-            'genre_id' => 'required|exists:genres,id',
+            'genres' => 'required|array',
+            'genres.*' => 'exists:genres,id',
         ]);
 
-        $book->update($validated); 
+        $book->genres()->sync($request->genres);
+        $book->update($request->except('genres'));
 
         return redirect()->route('books.show', $book)->with('success', '書籍情報を更新しました。');
     }
