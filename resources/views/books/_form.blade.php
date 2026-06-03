@@ -1,5 +1,5 @@
 @php
-    $bookGenreIds = isset($book) ? $book->genres->pluck('id')->toArray() : [];
+$bookGenreId = isset($book) ? $book->genre_id : null;
 @endphp
 
 @csrf
@@ -95,19 +95,17 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                     @foreach($genres as $genre)
                         <label class="inline-flex items-center cursor-pointer hover:bg-gray-100 p-2 rounded">
-                            <input type="checkbox" name="genres[]" value="{{ $genre->id }}"
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                                @if(in_array($genre->id, old('genres', $bookGenreIds))) checked @endif>
+                            <input type="radio" name="genre_id" value="{{ $genre->id }}"
+                                class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{-- ここで old()
+                                と $book->genre_id を使って直接判定します --}}
+                            {{ old('genre_id', $book->genre_id ?? null) == $genre->id ? 'checked' : '' }}>
                             <span class="ml-2 text-sm text-gray-700">{{ $genre->name }}</span>
                         </label>
                     @endforeach
                 </div>
             @endif
         </div>
-        @error('genres')
-            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-        @error('genres.*')
+        @error('genre_id')
             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
         @enderror
     </div>
