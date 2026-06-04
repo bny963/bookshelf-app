@@ -4,29 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Review;
-use App\Http\Requests\ReviewCreateRequest;
+use App\Http\Requests\ReviewRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
     /**
      * レビューの投稿・保存処理
      */
-    public function store(ReviewCreateRequest $request, Book $book)
+    public function store(ReviewRequest $request, Book $book)
     {
-        // 1. バリデーション済みのデータを取得（rating, comment）
-        $validated = $request->validated();
-
-        // 2. ログイン中のユーザーIDと、対象の書籍IDを紐付けてレビューを作成
-        Review::create([
+        // ログインユーザーと紐付けて作成
+        $book->reviews()->create(array_merge($request->validated(), [
             'user_id' => Auth::id(),
-            'book_id' => $book->id,
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'],
-        ]);
+        ]));
 
-        // 3. 元の書籍詳細画面に戻り、成功メッセージを表示
         return redirect()
             ->route('books.show', $book)
             ->with('success', 'レビューを投稿しました！');
@@ -34,22 +26,19 @@ class ReviewController extends Controller
     public function edit(Review $review)
     {
         $this->authorize('update', $review);
-
         $review->load('book');
-
         return view('reviews.edit', compact('review'));
     }
-    public function update(Request $request, Review $review)
+    public function update(ReviewRequest $request, Review $review)
     {
         $this->authorize('update', $review);
 
-        $validated = $request->validate([
-            'comment' => 'required|max:1000',
-            'rating' => 'required|integer|between:1,5',
-        ]);
+        // バリデーション済みデータで更新
+        $review->update($request->validated());
 
-        $review->update($validated);
-        return redirect()->route('books.show', $review->book_id)->with('success', 'レビューを更新しました。');
+        return redirect()
+            ->route('books.show', $review->book_id)
+            ->with('success', 'レビューを更新しました。');
     }
 
     public function destroy(Review $review)

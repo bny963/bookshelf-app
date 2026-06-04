@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Genre;
-use App\Http\Requests\BookSearchRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\BookRequest;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\BookUpdateRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+
+
 
 class BookController extends Controller
 {
@@ -46,23 +46,14 @@ class BookController extends Controller
         return view('books.create', compact('book', 'genres'));
     }
 
-    public function store(Request $request)
+    public function store(BookRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|max:255',
-            'author' => 'required|max:255',
-            'isbn' => 'required|size:13',
-            'published_date' => 'required|date',
-            'genres' => 'required|array',
-            'genres.*' => 'exists:genres,id',
-        ]);
+        $data = $request->validated();
 
-        $book = Book::create($request->except('genres'));
-
-        $book->user_id = auth()->id();
+        $book = Book::create($data);
+        $book->user_id = Auth::id();
         $book->save();
-
-        $book->genres()->sync($request->genres);
+        $book->genres()->sync($data['genres']);
 
         return redirect()->route('books.index')->with('success', '登録しました');
     }
@@ -95,21 +86,14 @@ class BookController extends Controller
 
         return view('books.edit', compact('book', 'genres'));
     }
-    public function update(Request $request, Book $book)
+    public function update(BookUpdateRequest $request, Book $book)
     {
         $this->authorize('update', $book);
 
-        $validated = $request->validate([
-            'title' => 'required|max:255',
-            'author' => 'required|max:255',
-            'isbn' => 'required|size:13',
-            'published_date' => 'required|date',
-            'genres' => 'required|array',
-            'genres.*' => 'exists:genres,id',
-        ]);
+        $data = $request->validated();
 
-        $book->genres()->sync($request->genres);
-        $book->update($request->except('genres'));
+        $book->genres()->sync($data['genres']);
+        $book->update($data);
 
         return redirect()->route('books.show', $book)->with('success', '書籍情報を更新しました。');
     }
