@@ -3,25 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Genre;
-use Illuminate\Http\Request;
+use App\Http\Requests\GenreStoreRequest;
+use App\Http\Requests\GenreUpdateRequest;
 
 class GenreController extends Controller
 {
     public function index()
     {
-        // withCount('books') を使うと、$genre->books_count が自動的に計算されます
         $genres = Genre::withCount('books')->get();
         return view('genres.index', compact('genres'));
     }
-
-    public function store(Request $request)
+    public function store(GenreStoreRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|unique:genres|max:255',
-        ]);
-
-        Genre::create($validated);
-
+        Genre::create($request->validated());
         return redirect()->route('genres.index')->with('success', 'ジャンルを登録しました。');
     }
 
@@ -44,15 +38,9 @@ class GenreController extends Controller
     {
         return view('genres.edit', compact('genre'));
     }
-    public function update(Request $request, Genre $genre)
+    public function update(GenreUpdateRequest $request, Genre $genre)
     {
-        // 入力チェック（自分自身以外の重複は許可する設定）
-        $validated = $request->validate([
-            'name' => 'required|max:255|unique:genres,name,' . $genre->id,
-        ]);
-
-        $genre->update($validated);
-
+        $genre->update($request->validated());
         return redirect()->route('genres.index')->with('success', 'ジャンルを更新しました。');
     }
 }
