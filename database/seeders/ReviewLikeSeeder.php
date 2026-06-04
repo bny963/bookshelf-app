@@ -22,13 +22,14 @@ class ReviewLikeSeeder extends Seeder
 
             $likers = $eligibleUsers->random(rand(0, min(3, $eligibleUsers->count())));
 
-            foreach ($likers as $liker) {
-                \DB::table('review_likes')->insertOrIgnore([
-                    'user_id' => $liker->id,
-                    'review_id' => $review->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+            foreach ($reviews as $review) {
+                $eligibleUsers = $users->where('id', '!=', $review->user_id);
+                if ($eligibleUsers->isEmpty())
+                    continue;
+
+                $likerIds = $eligibleUsers->random(rand(0, min(3, $eligibleUsers->count())))->pluck('id');
+
+                $review->likedByUsers()->syncWithoutDetaching($likerIds);
             }
         }
     }
