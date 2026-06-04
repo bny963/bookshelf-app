@@ -125,8 +125,8 @@ class BookSeeder extends Seeder
             // ジャンル名の文字列からIDを引っ張ってきて同期
             $genreIds = Genre::whereIn('name', $data['genres'])->pluck('id');
             if ($genreIds->isNotEmpty()) {
-                $book->genre_id = $genreIds->first(); // 最初のジャンルIDだけを採用
                 $book->save();
+                $book->genres()->sync([1]);
             }
         }
     }
