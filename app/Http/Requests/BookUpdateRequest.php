@@ -8,11 +8,13 @@ class BookUpdateRequest extends FormRequest
 {
     public function rules(): array
     {
-        // 自身のIDを除外して一意性をチェック
-        $bookId = $this->route('book');
+        $book = $this->route('book');
+        $bookId = $book instanceof \App\Models\Book ? $book->id : $book;
+
         return [
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
+            // ID を正しく渡す
             'isbn' => 'required|digits:13|unique:books,isbn,' . $bookId,
             'published_date' => 'required|date',
             'genres' => 'required|array|min:1',

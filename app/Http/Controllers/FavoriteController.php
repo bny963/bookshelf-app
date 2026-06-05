@@ -27,4 +27,25 @@ class FavoriteController extends Controller
 
         return view('favorites.index', compact('books'));
     }
+    public function store(Book $book)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        // お気に入り登録（まだ登録されていない場合のみ実行）
+        if (!$user->favoriteBooks()->where('book_id', $book->id)->exists()) {
+            $user->favoriteBooks()->attach($book->id);
+        }
+
+        return redirect()->route('books.index');
+    }
+
+    public function destroy(Book $book)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        // お気に入り解除
+        $user->favoriteBooks()->detach($book->id);
+
+        return redirect()->route('books.index');
+    }
 }

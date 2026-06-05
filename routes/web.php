@@ -30,3 +30,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
+
+Route::post('/favorites/{book}', [FavoriteController::class, 'store'])->name('favorites.store');
+Route::delete('/favorites/{book}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+Route::post('/likes/{review}', [LikeController::class, 'store'])->name('likes.store');
+Route::delete('/likes/{review}', [LikeController::class, 'destroy'])->name('likes.destroy');

@@ -50,9 +50,10 @@ class BookController extends Controller
     {
         $data = $request->validated();
 
-        $book = Book::create($data);
-        $book->user_id = Auth::id();
-        $book->save();
+        $data['user_id'] = Auth::id();
+
+        $book = Book::create($data); 
+
         $book->genres()->sync($data['genres']);
 
         return redirect()->route('books.index')->with('success', '登録しました');
@@ -90,10 +91,26 @@ class BookController extends Controller
     {
         $this->authorize('update', $book);
 
+        // バリデーション済みデータを取得
         $data = $request->validated();
 
-        $book->genres()->sync($data['genres']);
-        $book->update($data);
+        // 1. 書籍データのみを抽出 (fillable対象のみにする)
+        $bookData = [
+            'title' => $data['title'],
+            'author' => $data['author'],
+            'isbn' => $data['isbn'],
+            'published_date' => $data['published_date'],
+            'description' => $data['description'] ?? null,
+            'image_url' => $data['image_url'] ?? null,
+        ];
+
+        // 2. 書籍情報の更新
+        $book->update($bookData);
+
+        // 3. ジャンルの同期 (ここだけリレーションを扱う)
+        if (isset($data['genres'])) {
+            $book->genres()->sync($data['genres']);
+        }
 
         return redirect()->route('books.show', $book)->with('success', '書籍情報を更新しました。');
     }
