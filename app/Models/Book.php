@@ -17,7 +17,7 @@ class Book extends Model
         'published_date',
         'description',
         'image_url',
-        'genre_id',
+        'user_id',
     ];
     public function reviews(): HasMany
     {

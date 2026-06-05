@@ -9,12 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('books', function (Blueprint $table) {
-
-            $table->dropForeign('books_genre_id_foreign');
-
+            // SQLiteの場合は dropForeign を実行しない
+            if (config('database.default') !== 'sqlite') {
+                $table->dropForeign(['genre_id']); // 外部キー名を確認してください
+            }
             $table->dropColumn('genre_id');
         });
     }

@@ -8,7 +8,11 @@ class GenreUpdateRequest extends FormRequest
 {
     public function rules(): array
     {
-        $genreId = $this->route('genre');
-        return ['name' => 'required|string|max:50|unique:genres,name,' . $genreId];
+        $genre = $this->route('genre');
+        $genreId = $genre instanceof \App\Models\Genre ? $genre->id : $genre;
+
+        return [
+            'name' => 'required|string|max:255|unique:genres,name,' . $genreId,
+        ];
     }
 }

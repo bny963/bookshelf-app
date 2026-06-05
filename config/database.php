@@ -93,6 +93,20 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'testing_mysql' => [
+            'driver' => 'mysql',
+            'host' => 'mysql',
+            'port' => '3306',
+            'database' => 'bookshelf_test',
+            'username' => 'sail',
+            'password' => 'password',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
     ],
 
     /*

@@ -23,13 +23,13 @@ class BookFactory extends Factory
             'isbn' => $this->faker->unique()->numerify('#############'),
 
             // 過去30年から現在までのランダムな出版日
-            'published_at' => $this->faker->date('Y-m-d', 'now'),
+            'published_date' => $this->faker->date('Y-m-d', 'now'),
 
             // 本の概要（1〜3段落の長文テキスト）
             'description' => $this->faker->paragraphs(rand(1, 3), true),
 
             // ダミーの画像パス風の文字列
-            'image_path' => 'books/covers/' . $this->faker->uuid() . '.jpg',
+            'image_url' => 'books/covers/' . $this->faker->uuid() . '.jpg',
         ];
     }
 }
