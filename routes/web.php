@@ -42,3 +42,4 @@ Route::post('/favorites/{book}', [FavoriteController::class, 'store'])->name('fa
 Route::delete('/favorites/{book}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 Route::post('/likes/{review}', [LikeController::class, 'store'])->name('likes.store');
 Route::delete('/likes/{review}', [LikeController::class, 'destroy'])->name('likes.destroy');
+Route::get('/books/isbn/{isbn}', [App\Http\Controllers\BookController::class, 'isbnSearch'])->name('books.isbnSearch');
