@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\BookController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BookApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +23,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
     Route::apiResource('books', BookController::class);
+});
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/books', [BookApiController::class, 'index']);
 });
