@@ -15,8 +15,8 @@ class BookUpdateRequest extends FormRequest
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             // ID を正しく渡す
-            'isbn' => 'required|digits:13|unique:books,isbn,' . $bookId,
-            'published_date' => 'required|date',
+            'isbn' => 'nullable|digits:13|unique:books,isbn,' . $bookId,
+            'published_date' => 'nullable|date',
             'genres' => 'required|array|min:1',
             'image_url' => 'nullable|url',
         ];

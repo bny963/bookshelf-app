@@ -30,16 +30,14 @@ class BookRequest extends FormRequest
         }
     }
 
-    /**
-     * バリデーションルール
-     */
+
     public function rules(): array
     {
         return [
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'isbn' => 'required|string|digits:13', //  ハイフンが消えるので「size」ではなく数字のみの「digits:13」が使えます
-            'published_date' => 'required|date',
+            'isbn' => 'nullable|string|digits:13',
+            'published_date' => 'nullable|date',
             'description' => 'nullable|string',
             'image_url' => 'nullable|url',
             'genres' => 'required|array',
@@ -47,17 +45,13 @@ class BookRequest extends FormRequest
         ];
     }
 
-    /**
-     * エラーメッセージの日本語化
-     */
+
     public function messages(): array
     {
         return [
             'title.required' => 'タイトルは必須です。',
             'author.required' => '著者名は必須です。',
-            'isbn.required' => 'ISBNは必須です。',
             'isbn.digits' => 'ISBNはハイフンを除いた13桁の数字で入力してください。',
-            'published_date.required' => '出版日は必須です。',
             'genres.required' => 'ジャンルは必須です。',
         ];
     }
