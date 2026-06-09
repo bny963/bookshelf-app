@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BookRequest;
 use App\Http\Requests\BookUpdateRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 
 
@@ -21,15 +22,26 @@ class BookController extends Controller
         $genres = Genre::all();
         $query = Book::query();
 
-        if ($request->filled('genre_id')) {
-            $query->whereHas('genres', function ($q) use ($request) {
-                $q->where('genres.id', $request->input('genre_id'));
+        if ($request->filled('keyword')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('author', 'like', '%' . $request->keyword . '%');
             });
         }
+        if ($request->filled('genre')) {
+            $query->whereHas('genres', function ($q) use ($request) {
+                $q->where('genres.id', $request->input('genre')); // 受け取った 'genre' を使用
+            });
+        }
+        $sort = $request->input('sort', 'latest');
 
-        $books = $query->with('genres')->paginate(10);
-
-        $books->appends($request->all());
+        $query = match ($sort) {
+            'oldest' => $query->orderBy('published_date', 'asc'), 
+            'title' => $query->orderBy('title', 'asc'),
+            'rating' => $query->withAvg('reviews', 'rating')->orderByDesc('reviews_avg_rating'),
+            default => $query->orderBy('published_date', 'desc'), 
+        };
+        $books = $query->with(['genres', 'reviews'])->paginate(10)->withQueryString();
 
         return view('books.index', compact('books', 'genres'));
     }
@@ -119,5 +131,29 @@ class BookController extends Controller
         $this->authorize('delete', $book);
         $book->delete();
         return redirect()->route('books.index')->with('success', '書籍を削除しました。');
+    }
+    public function isbnSearch($isbn)
+    {
+        $cleanIsbn = str_replace('-', '', $isbn);
+        $apiKey = config('services.google_books.api_key');
+
+        $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:{$cleanIsbn}&key={$apiKey}";
+        $response = Http::get($url);
+
+        if ($response->successful() && isset($response['items'][0])) {
+            $info = $response['items'][0]['volumeInfo'];
+
+            $imageUrl = $info['imageLinks']['thumbnail'] ?? null;
+
+            return response()->json([
+                'title' => $info['title'] ?? '',
+                'author' => isset($info['authors']) ? implode(', ', $info['authors']) : '',
+                'description' => $info['description'] ?? '',
+                'published_date' => $info['publishedDate'] ?? null,
+                'image_url' => $imageUrl,
+            ]);
+        }
+
+        return response()->json(['error' => '指定された ISBN の書籍は見つかりませんでした。'], 404);
     }
 }
