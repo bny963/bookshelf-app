@@ -12,8 +12,8 @@ class BookUpdateRequest extends FormRequest
         return [
             'title' => 'required|max:255',
             'author' => 'required|max:255',
-            'isbn' => 'required|digits:13|unique:books,isbn,' . $bookId,
-            'published_date' => 'required|date',
+            'isbn' => 'nullable|digits:13|unique:books,isbn,' . $bookId,
+            'published_date' => 'nullable|date',
             'genres' => 'required|array',
             'genres.*' => 'exists:genres,id',
             'user_id' => 'required|exists:users,id',
