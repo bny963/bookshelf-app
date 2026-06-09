@@ -11,9 +11,7 @@ class BookSeeder extends Seeder
 {
     public function run(): void
     {
-        // 要件：登録者は User::first()（山田太郎）とする
-        $adminUser = User::first();
-
+        $users = User::all();
         $booksData = [
             [
                 'title' => '吾輩は猫である',
@@ -98,7 +96,7 @@ class BookSeeder extends Seeder
             [
                 'title' => 'コンテナ物語',
                 'author' => 'マルク・レビンソン',
-                'isbn' => '9784822251468',
+                'isbn' => '9784822245566',
                 'published_at' => '2007-01-18',
                 'genres' => ['ビジネス', '歴史'],
                 'desc' => '世界経済を激変させた「箱」の偉大なるイノベーション史。'
@@ -108,26 +106,20 @@ class BookSeeder extends Seeder
         foreach ($booksData as $index => $data) {
             $num = $index + 1;
 
-            // 要件：firstOrCreate（ISBN重複防止）を使用
-            $book = Book::firstOrCreate(
-                ['isbn' => $data['isbn']],
-                [
-                    'user_id' => $adminUser->id,
-                    'title' => $data['title'],
-                    'author' => $data['author'],
-                    'published_date' => $data['published_at'],
-                    'description' => $data['desc'],
-                    // 要件：https://placehold.co/200x300/e2e8f0/475569?text={番号} 形式
-                    'image_url' => "https://placehold.co/200x300/e2e8f0/475569?text=$num",
-                ]
-            );
+            // create() に変更
+            $book = Book::create([
+                'user_id' => $users->random()->id, // ランダムユーザー割当
+                'title' => $data['title'],
+                'author' => $data['author'],
+                'isbn' => $data['isbn'],
+                'published_date' => $data['published_at'],
+                'description' => $data['desc'],
+                'image_url' => "https://placehold.co/200x300/e2e8f0/475569?text=$num",
+            ]);
 
-            // ジャンル名の文字列からIDを引っ張ってきて同期
+            // ジャンル紐付けを attach() に変更
             $genreIds = Genre::whereIn('name', $data['genres'])->pluck('id');
-            if ($genreIds->isNotEmpty()) {
-                $book->save();
-                $book->genres()->sync([1]);
-            }
+            $book->genres()->attach($genreIds);
         }
     }
 }
