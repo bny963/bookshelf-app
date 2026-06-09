@@ -11,20 +11,35 @@ class ReportController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        $userReviews = Review::where('user_id', $userId);
 
-        // 1. 基本統計の集計
+        $totalReviews = Review::where('user_id', $userId)->count();
+        $booksRead = Review::where('user_id', $userId)->distinct('book_id')->count();
+        $avgRating = Review::where('user_id', $userId)->avg('rating');
+
         $stats = [
             'summary' => [
-                'total_reviews' => $userReviews->count(),
-                'books_read' => $userReviews->distinct('book_id')->count(),
-                'average_rating' => $userReviews->avg('rating'),
+                'total_reviews' => $totalReviews,
+                'books_read' => $booksRead,
+                'average_rating' => $avgRating,
             ],
-            // 2. 評価分布の集計
-            'rating_distribution' => $userReviews->select('rating', \DB::raw('count(*) as count'))
-                ->groupBy('rating')
-                ->pluck('count', 'rating'), // 配列として渡す
         ];
+        $distribution = Review::where('user_id', $userId)
+            ->whereBetween('rating', [1, 5])
+            ->select('rating', \DB::raw('count(*) as count'))
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+
+        // 2. 1〜5をキーとして強制的に作成（データがない場合は 0 を入れる）
+        $fullDistribution = [];
+        for ($i = 0; $i <= 4; $i++) {
+            $rating = $i + 1; // 1, 2, 3, 4, 5
+            $fullDistribution[$i] = $distribution[$rating] ?? 0;
+        }
+
+        // 3. これで $fullDistribution は [0=>★1の数, 1=>★2の数, ..., 4=>★5の数] になる
+// 現在はこれで 1 から順に並んでいるはずなので、そのまま渡します
+        $stats['rating_distribution'] = collect($fullDistribution);
 
         // 3. 高評価書籍TOP5 (top_rated_books)
         $stats['top_rated_books'] = \App\Models\Book::whereHas('reviews', fn($q) => $q->where('user_id', $userId))
