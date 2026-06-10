@@ -19,29 +19,49 @@ git clone -b basic https://github.com/bny963/bookshelf-app
 cp .env.example .env
 ```
 
-#### 3. Laravel Sailを使用してコンテナを起動します。
+#### 3. composer install
+```bash
+./vendor/bin/sail composer install
+```
+
+#### 4. Laravel Sailを使用してコンテナを起動します。
 ```bash
 ./vendor/bin/sail up -d
 ```
 
-#### 4. マイグレーションを実行します。
+#### 5. マイグレーションを実行します。
 ```bash
 ./vendor/bin/sail artisan migrate
 ```
 
-#### 5. 初期データを投入します。
+#### 6. 初期データを投入します。
 ```bash
 ./vendor/bin/sail artisan db:seed
 ```
 
-#### 6. フロントエンドをビルドして監視を開始します。
+#### 7. フロントエンドをビルドして監視を開始します。
 ```bash
 ./vendor/bin/sail npm install
 ./vendor/bin/sail npm run dev
 ```
+## テスト環境用データベースのセットアップ
+
+自動テスト（PHPUnit）を実行する前に、テスト専用のデータベースを手動で作成し、適切なアクセス権限を付与する必要があります。以下の手順に従って構築してください。
+
+#### 1. MySQLコンテナへの接続
+まず、Laravel Sailで起動しているMySQLコンテナ（rootユーザー）に接続します。
+
+```bash
+./vendor/bin/sail mysql -u root -p
+```
+
+#### 2. テスト
+```bash
+./vendor/bin/sail test
+```
 
 ## 使用技術
-言語/フレームワーク: PHP 8.2, Laravel 10
+言語/フレームワーク: PHP 8.5, Laravel 10
 
 データベース: MySQL 8.0
 
