@@ -6,8 +6,16 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * テストユーザーデータ投入用シーダー
+ */
 class UserSeeder extends Seeder
 {
+    /**
+     * データベースへ初期ユーザーデータを投入
+     *
+     * @return void
+     */
     public function run(): void
     {
         $users = [
@@ -19,12 +27,12 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            // 要件：email の重複を防ぐために firstOrCreate を使用
+            // firstOrCreate を使用し、メールアドレスの重複を防いで安全に登録
             User::firstOrCreate(
                 ['email' => $user['email']],
                 [
                     'name' => $user['name'],
-                    // 要件：Hash::make() を使用
+                    // パスワードを安全にハッシュ化
                     'password' => Hash::make('password'),
                 ]
             );

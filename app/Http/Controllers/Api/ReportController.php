@@ -3,12 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Book;
+use App\Models\Genre;
 use App\Models\Review;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
-    public function index()
+    /**
+     * ユーザーの読書分析レポートを取得する
+     *
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
     {
         $userId = Auth::id();
 
@@ -16,34 +25,27 @@ class ReportController extends Controller
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        $totalReviews = Review::where('user_id', $userId)->count();
-        $booksRead = Review::where('user_id', $userId)->distinct('book_id')->count();
-        $avgRating = Review::where('user_id', $userId)->avg('rating');
-
+        // 基礎統計データの取得
         $stats = [
             'summary' => [
-                'total_reviews' => $totalReviews,
-                'books_read' => $booksRead,
-                'average_rating' => $avgRating,
+                'total_reviews' => Review::where('user_id', $userId)->count(),
+                'books_read' => Review::where('user_id', $userId)->distinct('book_id')->count(),
+                'average_rating' => Review::where('user_id', $userId)->avg('rating'),
             ],
         ];
+
+        // 評価分布の集計
         $distribution = Review::where('user_id', $userId)
             ->whereBetween('rating', [1, 5])
-            ->select('rating', \DB::raw('count(*) as count'))
+            ->select('rating', DB::raw('count(*) as count'))
             ->groupBy('rating')
             ->pluck('count', 'rating')
             ->toArray();
 
-        $fullDistribution = [];
-        for ($i = 0; $i <= 4; $i++) {
-            $rating = $i + 1; // 1, 2, 3, 4, 5
-            $fullDistribution[$i] = $distribution[$rating] ?? 0;
-        }
+        $stats['rating_distribution'] = collect(range(1, 5))->map(fn($r) => $distribution[$r] ?? 0);
 
-
-        $stats['rating_distribution'] = collect($fullDistribution);
-
-        $stats['top_rated_books'] = \App\Models\Book::whereHas('reviews', fn($q) => $q->where('user_id', $userId))
+        // 高評価書籍TOP5
+        $stats['top_rated_books'] = Book::whereHas('reviews', fn($q) => $q->where('user_id', $userId))
             ->withAvg('reviews', 'rating')
             ->orderByDesc('reviews_avg_rating')
             ->take(5)
@@ -55,7 +57,8 @@ class ReportController extends Controller
                 'rating' => round($book->reviews_avg_rating),
             ]);
 
-        $stats['genre_ratings'] = \App\Models\Genre::query()
+        // ジャンル別評価統計
+        $stats['genre_ratings'] = Genre::query()
             ->select('genres.id', 'genres.name')
             ->selectRaw('AVG(reviews.rating) as average_rating')
             ->selectRaw('COUNT(DISTINCT books.id) as count')

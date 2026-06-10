@@ -5,17 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Review;
 use App\Http\Requests\ReviewRequest;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ReviewUpdateRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ReviewController extends Controller
 {
     /**
-     * レビューの投稿・保存処理
+     * レビューを投稿・保存する
+     *
+     * @param ReviewRequest $request
+     * @param Book $book
+     * @return RedirectResponse
      */
-    public function store(ReviewRequest $request, Book $book)
+    public function store(ReviewRequest $request, Book $book): RedirectResponse
     {
-        // ログインユーザーと紐付けて作成
         $book->reviews()->create(array_merge($request->validated(), [
             'user_id' => Auth::id(),
         ]));
@@ -24,17 +29,32 @@ class ReviewController extends Controller
             ->route('books.show', $book)
             ->with('success', 'レビューを投稿しました！');
     }
-    public function edit(Review $review)
+
+    /**
+     * レビュー編集画面を表示する
+     *
+     * @param Review $review
+     * @return View
+     */
+    public function edit(Review $review): View
     {
         $this->authorize('update', $review);
         $review->load('book');
+
         return view('reviews.edit', compact('review'));
     }
-    public function update(ReviewUpdateRequest $request, Review $review)
+
+    /**
+     * レビューを更新する
+     *
+     * @param ReviewUpdateRequest $request
+     * @param Review $review
+     * @return RedirectResponse
+     */
+    public function update(ReviewUpdateRequest $request, Review $review): RedirectResponse
     {
         $this->authorize('update', $review);
 
-        // バリデーション済みデータで更新
         $review->update($request->validated());
 
         return redirect()
@@ -42,9 +62,16 @@ class ReviewController extends Controller
             ->with('success', 'レビューを更新しました。');
     }
 
-    public function destroy(Review $review)
+    /**
+     * レビューを削除する
+     *
+     * @param Review $review
+     * @return RedirectResponse
+     */
+    public function destroy(Review $review): RedirectResponse
     {
         $this->authorize('delete', $review);
+
         $bookId = $review->book_id;
         $review->delete();
 

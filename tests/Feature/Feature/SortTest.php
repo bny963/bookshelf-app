@@ -3,41 +3,52 @@
 namespace Tests\Feature\Book;
 
 use App\Models\Book;
+use App\Models\Genre;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\Genre;
 
+/**
+ * 書籍のソート機能のテストクラス
+ */
 class SortTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function books_can_be_sorted_by_multiple_criteria()
+    /**
+     * @test
+     * ソート条件（最新順・古い順）によって書籍一覧の並び順が正しく変わること
+     */
+    public function books_can_be_sorted_by_multiple_criteria(): void
     {
-        $user = \App\Models\User::factory()->create(); // ユーザー生成
+        $user = User::factory()->create();
 
         Book::factory()->create(['title' => 'Aタイトル', 'created_at' => now()->subDays(20)]);
         Book::factory()->create(['title' => 'Bタイトル', 'created_at' => now()->subDays(1)]);
 
-        $this->actingAs($user) // 追加
+        // 最新順の検証
+        $this->actingAs($user)
             ->getJson('/api/v1/books?sort=latest')
             ->assertJsonPath('data.0.title', 'Bタイトル');
 
-        $this->actingAs($user) // 追加
+        // 古い順の検証
+        $this->actingAs($user)
             ->getJson('/api/v1/books?sort=oldest')
             ->assertJsonPath('data.0.title', 'Aタイトル');
     }
 
-    /** @test */
-    public function sorting_persists_with_filter()
+    /**
+     * @test
+     * フィルタリングとソートが併用された場合でもAPIが正常に動作すること
+     */
+    public function sorting_persists_with_filter(): void
     {
-        $user = \App\Models\User::factory()->create(); // ユーザー生成
+        $user = User::factory()->create();
         $genre = Genre::factory()->create();
 
         $book = Book::factory()->create();
         $book->genres()->attach($genre->id);
 
-        // actingAs($user) を追加
         $response = $this->actingAs($user)
             ->getJson(route('api.v1.books.index', [
                 'genre_id' => $genre->id,

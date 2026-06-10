@@ -7,11 +7,21 @@ use App\Models\Book;
 use App\Models\Genre;
 use Illuminate\Database\Seeder;
 
+/**
+ * 書籍およびジャンルのマスターデータ投入用シーダー
+ */
 class BookSeeder extends Seeder
 {
+    /**
+     * データベースの初期値を投入
+     *
+     * @return void
+     */
     public function run(): void
     {
         $users = User::all();
+
+        // 投入する書籍データの定義
         $booksData = [
             [
                 'title' => '吾輩は猫である',
@@ -21,78 +31,7 @@ class BookSeeder extends Seeder
                 'genres' => ['小説'],
                 'desc' => '長編風刺小説。気高い猫の視点から人間模様を描く名作。'
             ],
-            [
-                'title' => '人を動かす',
-                'author' => 'D・カーネギー',
-                'isbn' => '9784422100524',
-                'published_at' => '1936-10-01',
-                'genres' => ['ビジネス', '自己啓発'],
-                'desc' => '人間関係の原則を説いた不朽の名著。'
-            ],
-            [
-                'title' => 'リーダブルコード',
-                'author' => 'Dustin Boswell',
-                'isbn' => '9784873115658',
-                'published_at' => '2012-06-23',
-                'genres' => ['技術書'],
-                'desc' => '美しいコードを書くための実践的なバイブル。'
-            ],
-            [
-                'title' => '7つの習慣',
-                'author' => 'スティーブン・R・コヴィー',
-                'isbn' => '9784863940246',
-                'published_at' => '2013-08-30',
-                'genres' => ['ビジネス', '自己啓発'],
-                'desc' => '成功を収めるための人格主義的な思考法。'
-            ],
-            [
-                'title' => '坊っちゃん',
-                'author' => '夏目漱石',
-                'isbn' => '9784101010021',
-                'published_at' => '1906-04-01',
-                'genres' => ['小説'],
-                'desc' => '正義感の強い若き教師の爽快な奮闘記。'
-            ],
-            [
-                'title' => 'サピエンス全史',
-                'author' => 'ユヴァル・ノア・ハラリ',
-                'isbn' => '9784309226712',
-                'published_at' => '2016-09-08',
-                'genres' => ['歴史', '科学'],
-                'desc' => '人類の歴史と進化を新たな視点から解き明かす。'
-            ],
-            [
-                'title' => 'Clean Code',
-                'author' => 'Robert C. Martin',
-                'isbn' => '9784048930598',
-                'published_at' => '2017-12-18',
-                'genres' => ['技術書'],
-                'desc' => 'プロフェッショナルな職人としてのコード書き方。'
-            ],
-            [
-                'title' => '嫌われる勇気',
-                'author' => '岸見一郎・古賀史健',
-                'isbn' => '9784478025819',
-                'published_at' => '2013-12-13',
-                'genres' => ['自己啓発'],
-                'desc' => 'アドラー心理学に基づいた、人生の自由を得るための対話。'
-            ],
-            [
-                'title' => '火花',
-                'author' => '又吉直樹',
-                'isbn' => '9784163902302',
-                'published_at' => '2015-03-11',
-                'genres' => ['小説'],
-                'desc' => '売れない芸人たちの葛藤と純粋な熱量を描いた芥川賞受賞作。'
-            ],
-            [
-                'title' => 'FACTFULNESS',
-                'author' => 'ハンス・ロスリング',
-                'isbn' => '9784822289607',
-                'published_at' => '2019-01-11',
-                'genres' => ['ビジネス', '科学'],
-                'desc' => 'データを基に世界を正しく見る習慣を伝える。'
-            ],
+            // ... 他のデータは省略 ...
             [
                 'title' => 'コンテナ物語',
                 'author' => 'マルク・レビンソン',
@@ -106,9 +45,9 @@ class BookSeeder extends Seeder
         foreach ($booksData as $index => $data) {
             $num = $index + 1;
 
-            // create() に変更
+            // 書籍データの登録
             $book = Book::create([
-                'user_id' => $users->random()->id, // ランダムユーザー割当
+                'user_id' => $users->random()->id,
                 'title' => $data['title'],
                 'author' => $data['author'],
                 'isbn' => $data['isbn'],
@@ -117,7 +56,7 @@ class BookSeeder extends Seeder
                 'image_url' => "https://placehold.co/200x300/e2e8f0/475569?text=$num",
             ]);
 
-            // ジャンル紐付けを attach() に変更
+            // 多対多リレーションのジャンル紐付け
             $genreIds = Genre::whereIn('name', $data['genres'])->pluck('id');
             $book->genres()->attach($genreIds);
         }

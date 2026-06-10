@@ -5,12 +5,14 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
+/**
+ * アプリケーションのイベント・リスナー登録用サービスプロバイダー
+ */
 class EventServiceProvider extends ServiceProvider
 {
     /**
-     * The event to listener mappings for the application.
+     * イベントとリスナーの紐付け設定
      *
      * @var array<class-string, array<int, class-string>>
      */
@@ -21,7 +23,9 @@ class EventServiceProvider extends ServiceProvider
     ];
 
     /**
-     * Register any events for your application.
+     * アプリケーションのイベントを登録
+     *
+     * @return void
      */
     public function boot(): void
     {
@@ -29,7 +33,9 @@ class EventServiceProvider extends ServiceProvider
     }
 
     /**
-     * Determine if events and listeners should be automatically discovered.
+     * イベントとリスナーを自動検出するかどうかの判定
+     *
+     * @return bool
      */
     public function shouldDiscoverEvents(): bool
     {

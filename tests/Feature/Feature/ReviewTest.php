@@ -2,18 +2,22 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Book;
-use App\Models\User;
 use App\Models\Review;
+use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
+/**
+ * 書籍レビュー機能の機能テスト
+ */
 class ReviewTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $user;
-    protected $book;
+    protected User $user;
+    protected Book $book;
 
     protected function setUp(): void
     {
@@ -22,8 +26,11 @@ class ReviewTest extends TestCase
         $this->book = Book::factory()->create();
     }
 
-    /** @test */
-    public function 認証済みユーザーはレビューを投稿できる()
+    /**
+     * @test
+     * 認証済みユーザーがレビューを新規投稿できること
+     */
+    public function 認証済みユーザーはレビューを投稿できる(): void
     {
         $reviewData = [
             'rating' => 5,
@@ -35,7 +42,6 @@ class ReviewTest extends TestCase
 
         $response->assertRedirect(route('books.show', $this->book));
 
-        // データベースに投稿内容が反映されているか検証
         $this->assertDatabaseHas('reviews', [
             'user_id' => $this->user->id,
             'book_id' => $this->book->id,
@@ -44,10 +50,12 @@ class ReviewTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function 認証済みユーザーは自分のレビューを更新できる()
+    /**
+     * @test
+     * 認証済みユーザーが自身のレビューを更新できること
+     */
+    public function 認証済みユーザーは自分のレビューを更新できる(): void
     {
-        // 既存のレビューをFactoryで作成
         $review = Review::factory()->create([
             'user_id' => $this->user->id,
             'book_id' => $this->book->id,
@@ -62,24 +70,26 @@ class ReviewTest extends TestCase
             ->put(route('reviews.update', $review), $updatedData);
 
         $response->assertRedirect(route('books.show', $this->book));
+
         $this->assertDatabaseHas('reviews', [
             'id' => $review->id,
-            'rating' => 3,
-            'comment' => '修正後のコメントです。',
+            'rating' => $updatedData['rating'],
+            'comment' => $updatedData['comment'],
         ]);
     }
 
-    /** @test */
-    public function 他人のレビューは更新できない()
+    /**
+     * @test
+     * 他人のレビューの更新リクエストは認可エラー（AuthorizationException）になること
+     */
+    public function 他人のレビューは更新できない(): void
     {
         $owner = User::factory()->create();
         $otherUser = User::factory()->create();
-        $review = \App\Models\Review::factory()->create(['user_id' => $owner->id]);
+        $review = Review::factory()->create(['user_id' => $owner->id]);
 
-        // 1. AuthorizationException が投げられることを期待する
-        $this->expectException(\Illuminate\Auth\Access\AuthorizationException::class);
+        $this->expectException(AuthorizationException::class);
 
-        // 2. 実行する
         $this->actingAs($otherUser)
             ->put(route('reviews.update', $review), [
                 'comment' => '勝手に更新',

@@ -4,10 +4,15 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * 書籍登録・更新時のバリデーションクラス
+ */
 class BookRequest extends FormRequest
 {
     /**
-     * 認証のチェック（今回は一律 true で許可します）
+     * リクエストがこのリクエストを行う権限を持っているか判定
+     *
+     * @return bool
      */
     public function authorize(): bool
     {
@@ -15,12 +20,15 @@ class BookRequest extends FormRequest
     }
 
     /**
-     *  バリデーション前の前処理（ここでハイフンを除去）
+     * バリデーション前の前処理
+     * ISBNのハイフンを除去し、データ形式を統一する
+     *
+     * @return void
      */
     protected function prepareForValidation(): void
     {
         if ($this->has('isbn')) {
-            // 文字列からハイフン「-」をすべて削除し、半角に統一
+            // 文字列からハイフン「-」をすべて削除
             $cleanIsbn = str_replace('-', '', $this->isbn);
 
             // 変換した値をリクエストデータに再セットする
@@ -30,10 +38,14 @@ class BookRequest extends FormRequest
         }
     }
 
-
+    /**
+     * バリデーションルールを取得
+     *
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        // ルートから現在の書籍IDを取得
+        // ルートから現在の書籍IDを取得（更新時のユニークチェック用）
         $bookId = $this->route('book');
 
         return [
@@ -49,7 +61,11 @@ class BookRequest extends FormRequest
         ];
     }
 
-
+    /**
+     * バリデーションエラーメッセージのカスタマイズ
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [
