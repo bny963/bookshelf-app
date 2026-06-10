@@ -4,8 +4,26 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * 書籍一覧取得時のバリデーションクラス
+ */
 class BookIndexRequest extends FormRequest
 {
+    /**
+     * リクエストがこのリクエストを行う権限を持っているか判定
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * バリデーションルールを取得
+     *
+     * @return array<string, string>
+     */
     public function rules(): array
     {
         return [

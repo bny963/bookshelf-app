@@ -2,18 +2,24 @@
 
 namespace Tests\Unit\Models;
 
+use App\Models\Book;
 use App\Models\Review;
 use App\Models\User;
-use App\Models\Book;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * レビューモデルのリレーションシップテスト
+ */
 class ReviewTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function レビューはユーザーと書籍に所属している()
+    /**
+     * @test
+     * レビューがユーザーと書籍に対して正しく「belongsTo」リレーションを持っていること
+     */
+    public function レビューはユーザーと書籍に所属している(): void
     {
         // 1. ユーザーと書籍を作成
         $user = User::factory()->create();
@@ -25,7 +31,7 @@ class ReviewTest extends TestCase
             'book_id' => $book->id,
         ]);
 
-        // 3. リレーションメソッドを呼び出して検証
+        // 3. リレーションが正しく解決されるか検証
         $this->assertEquals($user->id, $review->user->id);
         $this->assertEquals($book->id, $review->book->id);
     }

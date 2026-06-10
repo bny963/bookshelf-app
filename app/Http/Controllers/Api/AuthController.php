@@ -7,16 +7,24 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    /**
+     * ユーザーログイン処理（トークン発行）
+     *
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function login(Request $request): JsonResponse
     {
         // 1. バリデーション
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-            'device_name' => 'required', // どの端末からのログインか識別用
+            'device_name' => 'required',
         ]);
 
         // 2. ユーザー認証
@@ -29,7 +37,6 @@ class AuthController extends Controller
         }
 
         // 3. トークン発行
-        // createTokenの引数は、トークンを識別するための名前
         $token = $user->createToken($request->device_name)->plainTextToken;
 
         return response()->json([

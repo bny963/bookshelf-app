@@ -4,22 +4,33 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+/**
+ * booksテーブルの既存カラム制約変更マイグレーション
+ */
+return new class extends Migration {
     /**
-     * Run the migrations.
+     * マイグレーション実行（isbnとpublished_dateをnullableに変更）
+     *
+     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('books', function (Blueprint $table) {
+            // ISBNと出版日をnull許容に変更
             $table->string('isbn')->nullable()->change();
             $table->date('published_date')->nullable()->change();
         });
     }
 
-    public function down()
+    /**
+     * マイグレーション取り消し（元に戻す）
+     *
+     * @return void
+     */
+    public function down(): void
     {
         Schema::table('books', function (Blueprint $table) {
+            // null非許容に戻す
             $table->string('isbn')->nullable(false)->change();
             $table->date('published_date')->nullable(false)->change();
         });

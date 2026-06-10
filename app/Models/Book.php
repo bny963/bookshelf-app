@@ -7,9 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * 書籍モデル
+ *
+ * @property int $id
+ * @property string $title
+ * @property string $author
+ * @property string $isbn
+ * @property \Illuminate\Support\Carbon|null $published_date
+ * @property string|null $description
+ * @property string|null $image_url
+ * @property int $user_id
+ */
 class Book extends Model
 {
     use HasFactory;
+
+    /**
+     * 複数代入可能な属性
+     */
     protected $fillable = [
         'title',
         'author',
@@ -19,24 +35,51 @@ class Book extends Model
         'image_url',
         'user_id',
     ];
+
+    /**
+     * キャストする属性
+     */
     protected $casts = [
         'published_date' => 'date',
     ];
+
+    /**
+     * この書籍に対するレビューを取得
+     *
+     * @return HasMany
+     */
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
 
-    public function genres()
+    /**
+     * この書籍に関連するジャンルを取得
+     *
+     * @return BelongsToMany
+     */
+    public function genres(): BelongsToMany
     {
         return $this->belongsToMany(Genre::class, 'book_genre', 'book_id', 'genre_id');
     }
+
+    /**
+     * この書籍をお気に入りに登録しているユーザーを取得
+     *
+     * @return BelongsToMany
+     */
     public function favoritedByUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'book_user')->withTimestamps();
     }
+
+    /**
+     * favorites と favoritedByUsers は同義のため、片方に統合してもOK
+     *
+     * @return BelongsToMany
+     */
     public function favorites(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'book_user')->withTimestamps();
+        return $this->favoritedByUsers();
     }
 }

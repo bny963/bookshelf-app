@@ -2,23 +2,32 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
+/**
+ * 認証機能のテストクラス
+ */
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function ユーザーはログイン画面にアクセスできる()
+    /**
+     * @test
+     * ログインページが正しく表示されること
+     */
+    public function ユーザーはログイン画面にアクセスできる(): void
     {
         $response = $this->get('/login');
         $response->assertStatus(200);
     }
 
-    /** @test */
-    public function 正しいパスワードでログインできる()
+    /**
+     * @test
+     * 正しい資格情報でWebログインが成功し、リダイレクトされること
+     */
+    public function 正しいパスワードでログインできる(): void
     {
         $user = User::factory()->create([
             'password' => bcrypt($password = 'password123'),
@@ -29,11 +38,15 @@ class AuthTest extends TestCase
             'password' => $password,
         ]);
 
-        $response->assertRedirect('/'); // またはダッシュボードなど
+        $response->assertRedirect('/');
         $this->assertAuthenticatedAs($user);
     }
-    /** @test */
-    public function ユーザー登録ができる()
+
+    /**
+     * @test
+     * 新規ユーザー登録が正常に行われ、DBに保存されること
+     */
+    public function ユーザー登録ができる(): void
     {
         $response = $this->postJson('/register', [
             'name' => 'Test User',
@@ -46,8 +59,11 @@ class AuthTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
     }
 
-    /** @test */
-    public function ログインができる()
+    /**
+     * @test
+     * API経由で認証情報が正しければログイン成功すること
+     */
+    public function ログインができる(): void
     {
         $user = User::factory()->create(['password' => bcrypt('password')]);
 

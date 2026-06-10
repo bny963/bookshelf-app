@@ -2,35 +2,51 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Genre;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * ジャンル管理機能の機能テスト
+ */
 class GenreControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function 認証済みユーザーはジャンルを登録できる()
+    /**
+     * @test
+     * 認証済みユーザーがジャンルを登録できること
+     */
+    public function 認証済みユーザーはジャンルを登録できる(): void
     {
         $user = User::factory()->create();
+
         $response = $this->actingAs($user)->postJson('/genres', ['name' => 'テストジャンル']);
 
-        $response->assertStatus(302); // Webコントローラーなのでリダイレクト確認
+        // リダイレクトを確認
+        $response->assertStatus(302);
         $this->assertDatabaseHas('genres', ['name' => 'テストジャンル']);
     }
-    /** @test */
-    public function ジャンル一覧を表示できる()
+
+    /**
+     * @test
+     * ジャンル一覧画面が正しく表示されること
+     */
+    public function ジャンル一覧を表示できる(): void
     {
         $user = User::factory()->create();
+
         $this->actingAs($user)
             ->get(route('genres.index'))
             ->assertStatus(200);
     }
 
-    /** @test */
-    public function ジャンルを登録できる()
+    /**
+     * @test
+     * ジャンルが正しく保存され、一覧画面へリダイレクトされること
+     */
+    public function ジャンルを登録できる(): void
     {
         $user = User::factory()->create();
         $genreData = ['name' => '新しいジャンル'];
@@ -42,8 +58,11 @@ class GenreControllerTest extends TestCase
         $this->assertDatabaseHas('genres', ['name' => '新しいジャンル']);
     }
 
-    /** @test */
-    public function ジャンルを削除できる()
+    /**
+     * @test
+     * 既存のジャンルが正しく削除されること
+     */
+    public function ジャンルを削除できる(): void
     {
         $user = User::factory()->create();
         $genre = Genre::factory()->create();

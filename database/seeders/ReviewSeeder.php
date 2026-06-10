@@ -7,14 +7,22 @@ use App\Models\Book;
 use App\Models\Review;
 use Illuminate\Database\Seeder;
 
+/**
+ * 書籍レビューデータ投入用シーダー
+ */
 class ReviewSeeder extends Seeder
 {
+    /**
+     * データベースへレビューデータを投入
+     *
+     * @return void
+     */
     public function run(): void
     {
         $users = User::all();
         $books = Book::all();
 
-        // 評価ごとのテンプレート（5段階）
+        // 評価値ごとのコメントテンプレート
         $comments = [
             1 => '期待外れでした...',
             2 => 'あまり好みではありませんでした。',
@@ -24,12 +32,10 @@ class ReviewSeeder extends Seeder
         ];
 
         foreach ($books as $book) {
-            // 各書籍に2〜4件のレビューをランダムに割り当て
-            $targetCount = rand(2, 4);
-            $reviewers = $users->random($targetCount);
+            // 各書籍に対し、2〜4人のユーザーからレビューを生成
+            $reviewers = $users->random(rand(2, 4));
 
             foreach ($reviewers as $reviewer) {
-                // 1〜5の全範囲に拡大
                 $rating = rand(1, 5);
 
                 Review::create([

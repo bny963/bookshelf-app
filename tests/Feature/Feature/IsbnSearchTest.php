@@ -5,9 +5,16 @@ namespace Tests\Feature\Api;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
+/**
+ * ISBN検索APIの機能テスト
+ */
 class IsbnSearchTest extends TestCase
 {
-    public function test_isbn_search_returns_book_data_successfully()
+    /**
+     * @test
+     * Google Books APIから書籍情報を正常に取得できること
+     */
+    public function test_isbn_search_returns_book_data_successfully(): void
     {
         // Google Books API のレスポンスを偽装
         Http::fake([
@@ -28,9 +35,13 @@ class IsbnSearchTest extends TestCase
             ->assertJsonPath('title', 'テスト書籍');
     }
 
-    public function test_isbn_search_handles_api_error()
+    /**
+     * @test
+     * 外部APIがエラーを返した場合に適切に404を返却すること
+     */
+    public function test_isbn_search_handles_api_error(): void
     {
-        // APIエラー（例えば404や500）をシミュレート
+        // APIエラー（404 Not Found）をシミュレート
         Http::fake([
             'googleapis.com/*' => Http::response([], 404)
         ]);
@@ -39,9 +50,13 @@ class IsbnSearchTest extends TestCase
             ->assertStatus(404);
     }
 
-    public function test_isbn_search_invalid_format()
+    /**
+     * @test
+     * ISBNの形式が不正な場合にバリデーションエラー（422）が返却されること
+     */
+    public function test_isbn_search_invalid_format(): void
     {
-        // 13桁未満など、バリデーションエラーのテスト
+        // 13桁未満など、バリデーションルールに違反するリクエスト
         $this->getJson('/api/v1/books/isbn/123')
             ->assertStatus(422);
     }

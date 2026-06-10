@@ -4,16 +4,34 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * 書籍登録・更新時のバリデーションクラス
+ */
 class BookRequest extends FormRequest
 {
+    /**
+     * リクエストがこのリクエストを行う権限を持っているか判定
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * バリデーションルールを取得
+     *
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         // 更新時は現在の書籍IDを取得
-        $bookId = $this->route('book'); 
+        $bookId = $this->route('book');
 
         return [
-            'title' => 'required|max:255',
-            'author' => 'required|max:255',
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
             // 更新時は自分自身を除外してISBNの一意性をチェック
             'isbn' => 'nullable|digits:13|unique:books,isbn,' . $bookId,
             'published_date' => 'nullable|date',
@@ -21,10 +39,17 @@ class BookRequest extends FormRequest
             'genres.*' => 'exists:genres,id',
         ];
     }
-        public function messages(): array
+
+    /**
+     * バリデーションエラーメッセージのカスタマイズ
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
     {
         return [
-            'user_id.exists' => '指定されたユーザーIDは存在しません。',
+            'genres.required' => 'ジャンルは最低1つ選択してください。',
+            'genres.*.exists' => '選択されたジャンルは無効です。',
         ];
     }
 }

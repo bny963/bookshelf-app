@@ -2,23 +2,27 @@
 
 namespace Tests\Feature\Api;
 
-use Tests\TestCase;
 use App\Models\Book;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
+/**
+ * 書籍関連APIの機能テスト
+ */
 class BookApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function APIから書籍一覧が正しい形式で取得できる()
+    /**
+     * @test
+     * 書籍一覧取得APIが正しい形式のJSONを返却することを確認
+     */
+    public function APIから書籍一覧が正しい形式で取得できる(): void
     {
-        $user = \App\Models\User::factory()->create();
-
+        $user = User::factory()->create();
         Book::factory()->count(5)->create();
 
-        // actingAs($user) を追加
         $response = $this->actingAs($user)
             ->getJson('/api/v1/books');
 
@@ -32,18 +36,20 @@ class BookApiTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function 必須項目が欠けているとエラーが返る()
+    /**
+     * @test
+     * バリデーションルールに違反した場合、適切なエラーレスポンスが返却されること
+     */
+    public function 必須項目が欠けているとエラーが返る(): void
     {
         $user = User::factory()->create();
 
-        // 1. バリデーションエラーが起きるリクエストを投げる
-        // 2. 例外をテストケース側でキャッチするために、withExceptionHandling() を明示的に呼ぶ（デフォルトですが念のため）
+        // 空のリクエストを送信してバリデーションエラーを検証
         $response = $this->actingAs($user)
             ->withExceptionHandling()
             ->postJson('/api/v1/books', []);
 
-        // 3. 422が返ることをアサートし、これでバリデーションエラーを「テスト成功」として扱う
+        // ステータスコード422（Unprocessable Entity）とバリデーションエラーの確認
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['title', 'author', 'genres']);
     }

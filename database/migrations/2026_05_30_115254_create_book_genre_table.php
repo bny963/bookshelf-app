@@ -4,27 +4,37 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+/**
+ * 書籍とジャンルの中間テーブル作成
+ */
+return new class extends Migration {
     /**
-     * Run the migrations.
+     * マイグレーション実行
+     *
+     * @return void
      */
     public function up(): void
     {
         Schema::create('book_genre', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('book_id')->constrained()->onDelete('cascade');
-            // 業務要件：「書籍紐付きがある場合は削除を制限すること」を満たすため restrict
-            $table->foreignId('genre_id')->constrained()->onDelete('restrict');
-            $table->timestamps();
+            $table->id();                                  // 主キー
 
-            // ER図通りの複合ユニーク：同じ本に同じジャンルが重複して紐づくのを防ぐ
+            // 外部キー：書籍（書籍削除時に紐付けも削除）
+            $table->foreignId('book_id')->constrained()->onDelete('cascade');
+
+            // 外部キー：ジャンル（書籍に紐付いている場合、ジャンル削除を制限）
+            $table->foreignId('genre_id')->constrained()->onDelete('restrict');
+
+            $table->timestamps();                          // 作成・更新日時
+
+            // 複合ユニーク制約：同じ書籍に同じジャンルが重複して登録されるのを防止
             $table->unique(['book_id', 'genre_id']);
         });
     }
 
     /**
-     * Reverse the migrations.
+     * マイグレーション取り消し
+     *
+     * @return void
      */
     public function down(): void
     {

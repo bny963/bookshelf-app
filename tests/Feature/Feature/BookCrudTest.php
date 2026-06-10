@@ -2,17 +2,21 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
+/**
+ * 書籍CRUDおよび権限の機能テスト
+ */
 class BookCrudTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $user;
+    protected User $user;
 
     protected function setUp(): void
     {
@@ -20,10 +24,12 @@ class BookCrudTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    /** @test */
-    public function 認証済みユーザーは書籍を登録できる()
+    /**
+     * @test
+     * 認証済みユーザーが書籍を新規登録できること
+     */
+    public function 認証済みユーザーは書籍を登録できる(): void
     {
-        $this->withoutExceptionHandling(); // デバッグ用
         $genre = Genre::factory()->create();
 
         $response = $this->actingAs($this->user)
@@ -32,8 +38,8 @@ class BookCrudTest extends TestCase
                 'author' => '著者名',
                 'isbn' => '1234567890123',
                 'published_date' => '2026-06-05',
-                'description' => 'テスト用の説明文', 
-                'image_url' => 'https://example.com/image.jpg', 
+                'description' => 'テスト用の説明文',
+                'image_url' => 'https://example.com/image.jpg',
                 'genres' => [$genre->id],
             ]);
 
@@ -41,11 +47,12 @@ class BookCrudTest extends TestCase
         $this->assertDatabaseHas('books', ['title' => 'テスト書籍']);
     }
 
-    /** @test */
-    public function 認証済みユーザーは書籍を更新できる()
+    /**
+     * @test
+     * 認証済みユーザーが自身の書籍を更新できること
+     */
+    public function 認証済みユーザーは書籍を更新できる(): void
     {
-        $this->withoutExceptionHandling();
-
         $myBook = Book::factory()->create(['user_id' => $this->user->id]);
         $genre = Genre::factory()->create();
 
@@ -58,14 +65,16 @@ class BookCrudTest extends TestCase
                 'genres' => [$genre->id],
             ]);
 
-        // 【最終回避策】 assertDatabaseHas を一切使わない
-        $bookInDb = \DB::table('books')->find($myBook->id);
-
+        $bookInDb = DB::table('books')->find($myBook->id);
         $this->assertNotNull($bookInDb);
         $this->assertEquals('更新後のタイトル', $bookInDb->title);
     }
-    /** @test */
-    public function 認証済みユーザーは書籍を削除できる()
+
+    /**
+     * @test
+     * 認証済みユーザーが書籍を削除できること
+     */
+    public function 認証済みユーザーは書籍を削除できる(): void
     {
         $book = Book::factory()->create(['user_id' => $this->user->id]);
 
@@ -76,17 +85,19 @@ class BookCrudTest extends TestCase
         $this->assertDatabaseMissing('books', ['id' => $book->id]);
     }
 
-    // 作成成功のテスト
-    public function test_user_can_create_book()
+    /**
+     * @test
+     * API経由での書籍登録ができること
+     */
+    public function test_user_can_create_book(): void
     {
-        // ジャンルを先に作成しておく
         $genre = Genre::factory()->create();
 
         $data = [
             'title' => 'テスト書籍',
             'author' => '著者名',
             'isbn' => '9784101010014',
-            'genres' => [$genre->id] // ここで作成したIDを渡す
+            'genres' => [$genre->id]
         ];
 
         $this->actingAs($this->user)
@@ -94,42 +105,42 @@ class BookCrudTest extends TestCase
             ->assertStatus(201);
     }
 
-    // 更新の認可テスト（自分 vs 他人）
-    public function test_book_update_policy_authorization()
+    /**
+     * @test
+     * 他人の書籍の更新には権限エラー（403）が返ること
+     */
+    public function test_book_update_policy_authorization(): void
     {
-        $me = User::factory()->create();
         $other = User::factory()->create();
         $genre = Genre::factory()->create();
-
-        $myBook = Book::factory()->create(['user_id' => $me->id]);
+        $myBook = Book::factory()->create(['user_id' => $this->user->id]);
         $othersBook = Book::factory()->create(['user_id' => $other->id]);
 
-        $updateData = [
-            'title' => '権限チェック',
-            'author' => 'テスト著者',
-            'genres' => [$genre->id]
-        ];
+        $updateData = ['title' => '権限チェック', 'author' => '著者', 'genres' => [$genre->id]];
 
-        $this->actingAs($me, 'sanctum')
+        // 自分の本は更新可能
+        $this->actingAs($this->user, 'sanctum')
             ->patchJson("/api/v1/books/{$myBook->id}", $updateData)
             ->assertStatus(200);
 
-        $response = $this->actingAs($me, 'sanctum')
+        // 他人の本は更新不可
+        $this->actingAs($this->user, 'sanctum')
             ->withExceptionHandling()
-            ->patchJson("/api/v1/books/{$othersBook->id}", $updateData);
-
-        $response->assertStatus(403);
+            ->patchJson("/api/v1/books/{$othersBook->id}", $updateData)
+            ->assertStatus(403);
     }
-    // 削除の認可テスト
-    public function test_book_delete_policy_authorization()
+
+    /**
+     * @test
+     * 他人の書籍の削除には権限エラー（403）が返ること
+     */
+    public function test_book_delete_policy_authorization(): void
     {
         $othersBook = Book::factory()->create(['user_id' => User::factory()->create()->id]);
 
-        // 認可エラーを例外としてではなくレスポンスとして取得する
-        $response = $this->actingAs($this->user)
-            ->withExceptionHandling() // 追加
-            ->deleteJson("/api/v1/books/{$othersBook->id}");
-
-        $response->assertStatus(403);
+        $this->actingAs($this->user)
+            ->withExceptionHandling()
+            ->deleteJson("/api/v1/books/{$othersBook->id}")
+            ->assertStatus(403);
     }
 }

@@ -2,33 +2,42 @@
 
 namespace Database\Factories;
 
+use App\Models\Book;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<Book>
+ */
 class BookFactory extends Factory
 {
+    /**
+     * モデルのデフォルトの属性を定義
+     *
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
         return [
-            // 既存のユーザーからランダムに紐付ける（あとでシーダー側で上書きも可能）
+            // Userモデルと関連付け
             'user_id' => User::factory(),
 
-            // 本のタイトル風のテキスト（1〜3単語）
+            // タイトル（1〜3単語）
             'title' => ucfirst($this->faker->words(rand(1, 3), true)),
 
             // 著者名
             'author' => $this->faker->name(),
 
-            // 【重要】業務要件に合わせた「13桁の数字」の文字列。重複を防ぐため unique() を付与
+            // 13桁のユニークなISBN
             'isbn' => $this->faker->unique()->numerify('#############'),
 
-            // 過去30年から現在までのランダムな出版日
-            'published_date' => $this->faker->date('Y-m-d', 'now'),
+            // 出版日（過去30年〜現在）
+            'published_date' => $this->faker->dateTimeBetween('-30 years', 'now')->format('Y-m-d'),
 
-            // 本の概要（1〜3段落の長文テキスト）
+            // 概要（1〜3段落）
             'description' => $this->faker->paragraphs(rand(1, 3), true),
 
-            // ダミーの画像パス風の文字列
+            // 画像URL
             'image_url' => 'books/covers/' . $this->faker->uuid() . '.jpg',
         ];
     }

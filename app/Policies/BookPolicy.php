@@ -5,18 +5,28 @@ namespace App\Policies;
 use App\Models\Book;
 use App\Models\User;
 
+/**
+ * 書籍モデルの認可ポリシー
+ */
 class BookPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * 一覧表示が可能か判定
+     *
+     * @param User $user
+     * @return bool
      */
     public function viewAny(User $user): bool
     {
-        return true; // 閲覧は誰でも可能とする場合
+        return true;
     }
 
     /**
-     * Determine whether the user can view the model.
+     * 詳細表示が可能か判定
+     *
+     * @param User $user
+     * @param Book $book
+     * @return bool
      */
     public function view(User $user, Book $book): bool
     {
@@ -24,7 +34,10 @@ class BookPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * 新規作成が可能か判定
+     *
+     * @param User $user
+     * @return bool
      */
     public function create(User $user): bool
     {
@@ -32,17 +45,23 @@ class BookPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * 更新が可能か判定（作成者のみ許可）
+     *
+     * @param User $user
+     * @param Book $book
+     * @return bool
      */
     public function update(User $user, Book $book): bool
     {
-        dump('User ID: ' . $user->id);
-        dump('Book User ID: ' . $book->user_id);
         return $user->id === $book->user_id;
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * 削除が可能か判定（作成者のみ許可）
+     *
+     * @param User $user
+     * @param Book $book
+     * @return bool
      */
     public function delete(User $user, Book $book): bool
     {
@@ -50,14 +69,23 @@ class BookPolicy
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * 復元が可能か判定
+     *
+     * @param User $user
+     * @param Book $book
+     * @return bool
      */
     public function restore(User $user, Book $book): bool
     {
-        return false; // 基本的に削除済みは復元させない場合
+        return false;
     }
+
     /**
-     * Determine whether the user can permanently delete the model.
+     * 完全削除が可能か判定
+     *
+     * @param User $user
+     * @param Book $book
+     * @return bool
      */
     public function forceDelete(User $user, Book $book): bool
     {
