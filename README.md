@@ -74,6 +74,8 @@ Ruma Kobayashi
 | GET | /api/isbn-search | Google Books APIを利用した書籍検索 |
 
 ## 開発環境URL
+
 アプリケーション: http://localhost
+
 phpMyAdmin: http://localhost:8080/
 
