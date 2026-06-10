@@ -12,7 +12,7 @@ class BookPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true; // 閲覧は誰でも可能とする場合
     }
 
     /**
@@ -20,7 +20,7 @@ class BookPolicy
      */
     public function view(User $user, Book $book): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -28,7 +28,7 @@ class BookPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -36,7 +36,9 @@ class BookPolicy
      */
     public function update(User $user, Book $book): bool
     {
-        return $user->id === $book->user_id; // 作成者のみ許可
+        dump('User ID: ' . $user->id);
+        dump('Book User ID: ' . $book->user_id);
+        return $user->id === $book->user_id;
     }
 
     /**
@@ -52,14 +54,13 @@ class BookPolicy
      */
     public function restore(User $user, Book $book): bool
     {
-        //
+        return false; // 基本的に削除済みは復元させない場合
     }
-
     /**
      * Determine whether the user can permanently delete the model.
      */
     public function forceDelete(User $user, Book $book): bool
     {
-        //
+        return false;
     }
 }

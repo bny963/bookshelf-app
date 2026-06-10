@@ -16,7 +16,7 @@ class BookUpdateRequest extends FormRequest
             'published_date' => 'nullable|date',
             'genres' => 'required|array',
             'genres.*' => 'exists:genres,id',
-            'user_id' => 'required|exists:users,id',
+            // 'user_id' => 'required|exists:users,id',
         ];
     }
 }

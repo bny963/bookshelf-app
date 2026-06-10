@@ -38,4 +38,28 @@ class BookTest extends TestCase
 
         $this->assertCount(3, $book->reviews);
     }
+    /** @test */
+    public function 書籍はお気に入りに登録できる()
+    {
+        $book = Book::factory()->create();
+        $user = User::factory()->create();
+
+        // 中間テーブルへの登録
+        $book->favoritedByUsers()->attach($user->id);
+
+        $this->assertCount(1, $book->favoritedByUsers);
+        $this->assertEquals($user->id, $book->favoritedByUsers->first()->id);
+    }
+    /** @test */
+    public function 書籍はお気に入り数を持つことができる()
+    {
+        $book = Book::factory()->create();
+        $user = User::factory()->create();
+
+        $book->favorites()->attach($user->id);
+
+        $book->refresh();
+
+        $this->assertCount(1, $book->favorites);
+    }
 }

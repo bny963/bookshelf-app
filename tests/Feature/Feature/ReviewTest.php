@@ -72,16 +72,18 @@ class ReviewTest extends TestCase
     /** @test */
     public function 他人のレビューは更新できない()
     {
+        $owner = User::factory()->create();
         $otherUser = User::factory()->create();
-        $review = Review::factory()->create(['user_id' => $otherUser->id]);
+        $review = \App\Models\Review::factory()->create(['user_id' => $owner->id]);
 
-        $response = $this->actingAs($this->user)
+        // 1. AuthorizationException が投げられることを期待する
+        $this->expectException(\Illuminate\Auth\Access\AuthorizationException::class);
+
+        // 2. 実行する
+        $this->actingAs($otherUser)
             ->put(route('reviews.update', $review), [
+                'comment' => '勝手に更新',
                 'rating' => 5,
-                'comment' => '改ざんテスト',
             ]);
-
-        // 権限がないため403エラーが発生することを確認
-        $response->assertStatus(403);
     }
 }

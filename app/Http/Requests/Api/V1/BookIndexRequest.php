@@ -11,6 +11,7 @@ class BookIndexRequest extends FormRequest
         return [
             'keyword' => 'nullable|string|max:100',
             'genre_id' => 'nullable|exists:genres,id',
+            'sort' => 'nullable|in:latest,oldest',
             'page' => 'integer|min:1',
             'per_page' => 'integer|min:1|max:100',
         ];

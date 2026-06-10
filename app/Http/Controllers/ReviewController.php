@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\Review;
 use App\Http\Requests\ReviewRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\ReviewUpdateRequest;
 
 class ReviewController extends Controller
 {
@@ -29,7 +30,7 @@ class ReviewController extends Controller
         $review->load('book');
         return view('reviews.edit', compact('review'));
     }
-    public function update(ReviewRequest $request, Review $review)
+    public function update(ReviewUpdateRequest $request, Review $review)
     {
         $this->authorize('update', $review);
 
