@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\Genre;
 use App\Models\User;
+use App\Models\Book;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class GenreTest extends TestCase
@@ -15,21 +16,19 @@ class GenreTest extends TestCase
     public function 同じ名前のジャンルは登録できない()
     {
         $user = User::factory()->create();
+        $name = 'SF系_' . uniqid();
 
-        // 1. 既存のジャンルを作成
-        $existingGenre = Genre::factory()->create(['name' => 'SF系']);
+        Genre::factory()->create(['name' => $name]);
 
-        // 2. 同じ名前でPOST
+        // 重要: withExceptionHandling を明示的に呼んでバリデーションエラーをレスポンスに変換させる
         $response = $this->actingAs($user)
-            ->post(route('genres.store'), [
-                'name' => 'SF系',
-            ]);
+            ->withExceptionHandling()
+            ->postJson(route('genres.store'), ['name' => $name]);
 
-        // 3. バリデーションエラーが返ることを確認
-        $response->assertSessionHasErrors(['name']);
-        $this->assertDatabaseCount('genres', 1);
+        // これで 422 が返ってくるはずです
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
     }
-
     /** @test */
     public function 自分のIDを除外して更新できる()
     {
@@ -43,5 +42,16 @@ class GenreTest extends TestCase
             ]);
 
         $response->assertRedirect(route('genres.index'));
+    }
+    /** @test */
+    public function ジャンルは書籍とリレーションを持つことができる()
+    {
+        $genre = Genre::factory()->create();
+        $book = Book::factory()->create();
+
+        $genre->books()->attach($book->id);
+
+        $this->assertCount(1, $genre->books);
+        $this->assertEquals($book->id, $genre->books->first()->id);
     }
 }

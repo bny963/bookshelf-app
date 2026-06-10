@@ -6,7 +6,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\GenreController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Api\ReportController;
 
 Route::get('/', [BookController::class, 'index'])->name('books.index');
 Route::get('/books', [BookController::class, 'index']);
@@ -28,8 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/reviews/{review}/like', [LikeController::class, 'toggle'])->name('reviews.like');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::resource('genres', GenreController::class);
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::resource('reading-plans', ReadingPlanController::class);
+    Route::get('/reports', [App\Http\Controllers\Api\ReportController::class, 'index'])->name('reports.index');
     Route::get('/notifications', function () {
         return view('notifications.index'); })->name('notifications.index');
     Route::get('/reading-plans', function () {

@@ -75,4 +75,61 @@ class BookCrudTest extends TestCase
         $response->assertRedirect(route('books.index'));
         $this->assertDatabaseMissing('books', ['id' => $book->id]);
     }
+
+    // 作成成功のテスト
+    public function test_user_can_create_book()
+    {
+        // ジャンルを先に作成しておく
+        $genre = Genre::factory()->create();
+
+        $data = [
+            'title' => 'テスト書籍',
+            'author' => '著者名',
+            'isbn' => '9784101010014',
+            'genres' => [$genre->id] // ここで作成したIDを渡す
+        ];
+
+        $this->actingAs($this->user)
+            ->postJson('/api/v1/books', $data)
+            ->assertStatus(201);
+    }
+
+    // 更新の認可テスト（自分 vs 他人）
+    public function test_book_update_policy_authorization()
+    {
+        $me = User::factory()->create();
+        $other = User::factory()->create();
+        $genre = Genre::factory()->create();
+
+        $myBook = Book::factory()->create(['user_id' => $me->id]);
+        $othersBook = Book::factory()->create(['user_id' => $other->id]);
+
+        $updateData = [
+            'title' => '権限チェック',
+            'author' => 'テスト著者',
+            'genres' => [$genre->id]
+        ];
+
+        $this->actingAs($me, 'sanctum')
+            ->patchJson("/api/v1/books/{$myBook->id}", $updateData)
+            ->assertStatus(200);
+
+        $response = $this->actingAs($me, 'sanctum')
+            ->withExceptionHandling()
+            ->patchJson("/api/v1/books/{$othersBook->id}", $updateData);
+
+        $response->assertStatus(403);
+    }
+    // 削除の認可テスト
+    public function test_book_delete_policy_authorization()
+    {
+        $othersBook = Book::factory()->create(['user_id' => User::factory()->create()->id]);
+
+        // 認可エラーを例外としてではなくレスポンスとして取得する
+        $response = $this->actingAs($this->user)
+            ->withExceptionHandling() // 追加
+            ->deleteJson("/api/v1/books/{$othersBook->id}");
+
+        $response->assertStatus(403);
+    }
 }

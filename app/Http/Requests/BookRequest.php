@@ -33,10 +33,14 @@ class BookRequest extends FormRequest
 
     public function rules(): array
     {
+        // ルートから現在の書籍IDを取得
+        $bookId = $this->route('book');
+
         return [
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'isbn' => 'nullable|string|digits:13',
+            // unique:テーブル名,カラム名,除外ID
+            'isbn' => 'nullable|string|digits:13|unique:books,isbn,' . $bookId,
             'published_date' => 'nullable|date',
             'description' => 'nullable|string',
             'image_url' => 'nullable|url',

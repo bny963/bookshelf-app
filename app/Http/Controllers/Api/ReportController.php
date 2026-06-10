@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Review;
-use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
@@ -11,6 +11,10 @@ class ReportController extends Controller
     public function index()
     {
         $userId = Auth::id();
+
+        if (!$userId) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
 
         $totalReviews = Review::where('user_id', $userId)->count();
         $booksRead = Review::where('user_id', $userId)->distinct('book_id')->count();
@@ -30,18 +34,15 @@ class ReportController extends Controller
             ->pluck('count', 'rating')
             ->toArray();
 
-        // 2. 1〜5をキーとして強制的に作成（データがない場合は 0 を入れる）
         $fullDistribution = [];
         for ($i = 0; $i <= 4; $i++) {
             $rating = $i + 1; // 1, 2, 3, 4, 5
             $fullDistribution[$i] = $distribution[$rating] ?? 0;
         }
 
-        // 3. これで $fullDistribution は [0=>★1の数, 1=>★2の数, ..., 4=>★5の数] になる
-// 現在はこれで 1 から順に並んでいるはずなので、そのまま渡します
+
         $stats['rating_distribution'] = collect($fullDistribution);
 
-        // 3. 高評価書籍TOP5 (top_rated_books)
         $stats['top_rated_books'] = \App\Models\Book::whereHas('reviews', fn($q) => $q->where('user_id', $userId))
             ->withAvg('reviews', 'rating')
             ->orderByDesc('reviews_avg_rating')
@@ -54,7 +55,6 @@ class ReportController extends Controller
                 'rating' => round($book->reviews_avg_rating),
             ]);
 
-        // 4. ジャンル別評価傾向TOP5 (genre_ratings)
         $stats['genre_ratings'] = \App\Models\Genre::query()
             ->select('genres.id', 'genres.name')
             ->selectRaw('AVG(reviews.rating) as average_rating')
@@ -68,6 +68,6 @@ class ReportController extends Controller
             ->take(5)
             ->get();
 
-        return view('reports.index', compact('stats'));
+        return response()->json($stats);
     }
 }
