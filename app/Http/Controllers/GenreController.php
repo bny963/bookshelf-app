@@ -40,7 +40,7 @@ class GenreController extends Controller
     public function store(GenreStoreRequest $request): RedirectResponse
     {
         Genre::create($request->validated());
-        return redirect()->route('genres.index')->with('success', 'ジャンルを登録しました。');
+        return redirect()->route('genres.index')->with('success', 'ジャンルを作成しました。');
     }
 
     /**

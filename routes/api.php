@@ -22,7 +22,7 @@ Route::prefix('v1')->group(function () {
     // 認証必須ルート
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/books', [BookController::class, 'store']);
-        Route::patch('/books/{book}', [BookController::class, 'update']);
+        Route::match(['PUT', 'PATCH'], '/books/{book}', [BookController::class, 'update']);
         Route::delete('/books/{book}', [BookController::class, 'destroy']);
 
         Route::get('/report', [ReportController::class, 'index']);
