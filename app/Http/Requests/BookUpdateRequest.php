@@ -36,7 +36,9 @@ class BookUpdateRequest extends FormRequest
             // 更新時は自分自身を除外してISBNの一意性をチェック
             'isbn' => 'nullable|digits:13|unique:books,isbn,' . $bookId,
             'published_date' => 'nullable|date',
+            'description' => 'nullable|string',
             'genres' => 'required|array|min:1',
+            'genres.*' => 'exists:genres,id',
             'image_url' => 'nullable|url',
         ];
     }
