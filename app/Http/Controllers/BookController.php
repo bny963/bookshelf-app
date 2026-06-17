@@ -80,7 +80,7 @@ class BookController extends Controller
         $book = Book::create($data);
         $book->genres()->sync($data['genres'] ?? []);
 
-        return redirect()->route('books.index')->with('success', '登録しました');
+        return redirect()->route('books.index')->with('success', '書籍を登録しました。');
     }
 
     /**
@@ -177,7 +177,19 @@ class BookController extends Controller
         $apiKey = config('services.google_books.api_key');
         $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:{$cleanIsbn}&key={$apiKey}";
 
-        $response = Http::get($url);
+        try {
+            $response = Http::get($url);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'API通信エラーが発生しました。しばらく時間をおいてから再度お試しください。'], 500);
+        }
+
+        if ($response->status() === 429) {
+            return response()->json(['error' => 'APIの利用上限に達しました。しばらく時間をおいてから再度お試しください。'], 429);
+        }
+
+        if ($response->serverError()) {
+            return response()->json(['error' => 'API通信エラーが発生しました。しばらく時間をおいてから再度お試しください。'], 500);
+        }
 
         if ($response->successful() && isset($response['items'][0])) {
             $info = $response['items'][0]['volumeInfo'];

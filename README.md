@@ -19,27 +19,41 @@ git clone -b basic https://github.com/bny963/bookshelf-app
 cp .env.example .env
 ```
 
-#### 3. composer install
+#### 3. Google Books API キーを設定します。
+書籍情報の自動入力機能（ISBN検索）を使用するには、Google Books API キーが必要です。
+
+1. [Google Cloud Console](https://console.cloud.google.com/) にアクセスし、プロジェクトを作成または選択します。
+2. 「APIとサービス」→「ライブラリ」から **Books API** を有効化します。
+3. 「APIとサービス」→「認証情報」から API キーを作成します。
+4. `.env` の以下の項目に取得した API キーを設定します。
+
+```env
+GOOGLE_BOOKS_API_KEY=取得したAPIキー
+```
+
+> API キーを設定しない場合でも、ISBN検索機能以外は正常に動作します。
+
+#### 4. composer install
 ```bash
 ./vendor/bin/sail composer install
 ```
 
-#### 4. Laravel Sailを使用してコンテナを起動します。
+#### 5. Laravel Sailを使用してコンテナを起動します。
 ```bash
 ./vendor/bin/sail up -d
 ```
 
-#### 5. マイグレーションを実行します。
+#### 6. マイグレーションを実行します。
 ```bash
 ./vendor/bin/sail artisan migrate
 ```
 
-#### 6. 初期データを投入します。
+#### 7. 初期データを投入します。
 ```bash
 ./vendor/bin/sail artisan db:seed
 ```
 
-#### 7. フロントエンドをビルドして監視を開始します。
+#### 8. フロントエンドをビルドして監視を開始します。
 ```bash
 ./vendor/bin/sail npm install
 ./vendor/bin/sail npm run dev
