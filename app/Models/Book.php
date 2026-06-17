@@ -60,7 +60,7 @@ class Book extends Model
      */
     public function genres(): BelongsToMany
     {
-        return $this->belongsToMany(Genre::class, 'book_genre', 'book_id', 'genre_id');
+        return $this->belongsToMany(Genre::class, 'book_genres', 'book_id', 'genre_id');
     }
 
     /**
@@ -70,12 +70,10 @@ class Book extends Model
      */
     public function favoritedByUsers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'book_user')->withTimestamps();
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
 
     /**
-     * favorites と favoritedByUsers は同義のため、片方に統合してもOK
-     *
      * @return BelongsToMany
      */
     public function favorites(): BelongsToMany
