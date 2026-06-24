@@ -36,9 +36,9 @@
                     <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
                         {{ __('マイレポート') }}
                     </x-nav-link>
-                    <!-- <x-nav-link :href="route('reading-plans.index')" :active="request()->routeIs('reading-plans.*')">
+                    <x-nav-link :href="route('reading-plans.index')" :active="request()->routeIs('reading-plans.*')">
                         {{ __('読書計画') }}
-                    </x-nav-link> -->
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -119,9 +119,9 @@
             <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
                 {{ __('マイレポート') }}
             </x-responsive-nav-link>
-            <!-- <x-responsive-nav-link :href="route('reading-plans.index')" :active="request()->routeIs('reading-plans.*')">
+            <x-responsive-nav-link :href="route('reading-plans.index')" :active="request()->routeIs('reading-plans.*')">
                 {{ __('読書計画') }}
-            </x-responsive-nav-link> -->
+            </x-responsive-nav-link>
             @auth
                 <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
                     {{ __('通知') }}@if($unreadNotificationCount > 0) <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">{{ $unreadNotificationCount }}</span>@endif

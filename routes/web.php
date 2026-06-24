@@ -4,6 +4,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\ReadingPlanController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
@@ -37,7 +38,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('genres', GenreController::class);
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/notifications', fn() => view('notifications.index'))->name('notifications.index');
-    Route::get('/reading-plans', fn() => view('reading-plans.index'))->name('reading-plans.index');
+
+    // 読書計画管理
+    Route::post('/reading-plans/{reading_plan}/complete', [ReadingPlanController::class, 'complete'])->name('reading-plans.complete');
+    Route::resource('reading-plans', ReadingPlanController::class)->except(['show']);
 });
 
 /**
