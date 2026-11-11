@@ -6,6 +6,7 @@ use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍関連のWeb表示・操作の機能テスト
@@ -15,9 +16,9 @@ class BookWebTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * 書籍一覧画面が正しく表示されること
      */
+    #[Test]
     public function 一覧画面が表示される(): void
     {
         $response = $this->get('/books');
@@ -27,9 +28,9 @@ class BookWebTest extends TestCase
     }
 
     /**
-     * @test
      * 認証済みユーザーが書籍登録画面にアクセスできること
      */
+    #[Test]
     public function 登録画面が表示される(): void
     {
         $user = User::factory()->create();
@@ -41,9 +42,9 @@ class BookWebTest extends TestCase
     }
 
     /**
-     * @test
      * 認証済みユーザーが書籍データを新規登録できること
      */
+    #[Test]
     public function 書籍を登録できる(): void
     {
         $user = User::factory()->create();

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * レビューの「いいね」機能のテストクラス
@@ -16,9 +17,9 @@ class LikeTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * ユーザーがレビューにいいねをし、正しくデータベースに記録されること
      */
+    #[Test]
     public function ユーザーはレビューにいいね・解除できる(): void
     {
         $user = User::factory()->create();

@@ -16,10 +16,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('books', function (Blueprint $table) {
-            // SQLiteは外部キー制約の削除が複雑なため、sqlite以外の場合のみ実行
-            if (config('database.default') !== 'sqlite') {
-                $table->dropForeign(['genre_id']);
-            }
+            // Laravel 11以降はSQLiteでも外部キー制約を削除できる（先に削除しないとdropColumnが失敗する）
+            $table->dropForeign(['genre_id']);
             $table->dropColumn('genre_id');
         });
     }

@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍更新リクエストのバリデーションテスト
@@ -15,10 +16,10 @@ class BookUpdateRequestTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * 不正なデータ（空のタイトルなど）で更新リクエストを送信した場合、
      * バリデーションエラー（422）が返却されること
      */
+    #[Test]
     public function 不正なデータで更新しようとするとバリデーションエラーになる(): void
     {
         $user = User::factory()->create();

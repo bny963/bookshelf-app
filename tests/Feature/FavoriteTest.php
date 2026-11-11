@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * お気に入り機能のテストクラス
@@ -22,9 +23,9 @@ class FavoriteTest extends TestCase
     }
 
     /**
-     * @test
      * ユーザーがお気に入りの登録と解除を正常に行えること
      */
+    #[Test]
     public function ユーザーはお気に入りを登録・解除できる(): void
     {
         $user = User::factory()->create();

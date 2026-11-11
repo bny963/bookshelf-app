@@ -7,6 +7,7 @@ use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * ジャンル機能のユニットおよび機能テスト
@@ -16,9 +17,9 @@ class GenreTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * 同一名称のジャンル登録がバリデーションにより拒否されること
      */
+    #[Test]
     public function 同じ名前のジャンルは登録できない(): void
     {
         $user = User::factory()->create();
@@ -36,9 +37,9 @@ class GenreTest extends TestCase
     }
 
     /**
-     * @test
      * 既存ジャンルの更新時、自分自身の名称であれば一意性チェックに抵触しないこと
      */
+    #[Test]
     public function 自分のIDを除外して更新できる(): void
     {
         $user = User::factory()->create();
@@ -54,9 +55,9 @@ class GenreTest extends TestCase
     }
 
     /**
-     * @test
      * ジャンルと書籍が多対多リレーションで正しく関連付けられること
      */
+    #[Test]
     public function ジャンルは書籍とリレーションを持つことができる(): void
     {
         $genre = Genre::factory()->create();

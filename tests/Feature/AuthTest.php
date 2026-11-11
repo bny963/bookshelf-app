@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 認証機能のテストクラス
@@ -14,9 +15,9 @@ class AuthTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * ログインページが正しく表示されること
      */
+    #[Test]
     public function ユーザーはログイン画面にアクセスできる(): void
     {
         $response = $this->get('/login');
@@ -24,9 +25,9 @@ class AuthTest extends TestCase
     }
 
     /**
-     * @test
      * 正しい資格情報でWebログインが成功し、リダイレクトされること
      */
+    #[Test]
     public function 正しいパスワードでログインできる(): void
     {
         $user = User::factory()->create([
@@ -43,9 +44,9 @@ class AuthTest extends TestCase
     }
 
     /**
-     * @test
      * 新規ユーザー登録が正常に行われ、DBに保存されること
      */
+    #[Test]
     public function ユーザー登録ができる(): void
     {
         $response = $this->postJson('/register', [
@@ -60,9 +61,9 @@ class AuthTest extends TestCase
     }
 
     /**
-     * @test
      * API経由で認証情報が正しければログイン成功すること
      */
+    #[Test]
     public function ログインができる(): void
     {
         $user = User::factory()->create(['password' => bcrypt('password')]);

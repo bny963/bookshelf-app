@@ -8,6 +8,7 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍モデルのリレーションシップテスト
@@ -17,9 +18,9 @@ class BookTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * 書籍が複数のジャンルと多対多リレーションを持っていること
      */
+    #[Test]
     public function 書籍は複数のジャンルに所属できる(): void
     {
         $book = Book::factory()->create();
@@ -32,9 +33,9 @@ class BookTest extends TestCase
     }
 
     /**
-     * @test
      * 書籍が複数のレビューを一対多リレーションで保持できること
      */
+    #[Test]
     public function 書籍は複数のレビューを持つことができる(): void
     {
         $book = Book::factory()->create();
@@ -45,9 +46,9 @@ class BookTest extends TestCase
     }
 
     /**
-     * @test
      * 書籍がユーザーによってお気に入り登録可能であること
      */
+    #[Test]
     public function 書籍はお気に入りに登録できる(): void
     {
         $book = Book::factory()->create();
@@ -60,9 +61,9 @@ class BookTest extends TestCase
     }
 
     /**
-     * @test
      * 書籍がお気に入りリレーションを保持し、件数をカウントできること
      */
+    #[Test]
     public function 書籍はお気に入り数を持つことができる(): void
     {
         $book = Book::factory()->create();

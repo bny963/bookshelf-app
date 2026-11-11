@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Laravel Sanctum 認証の機能テスト
@@ -15,9 +16,9 @@ class SanctumTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * 未認証ユーザーが保護されたAPIにアクセスした場合、401エラーになることの確認
      */
+    #[Test]
     public function test_unauthenticated_user_gets_401(): void
     {
         // 例外をハンドリングせずにそのままスローさせ、AuthenticationExceptionを検証
@@ -28,9 +29,9 @@ class SanctumTest extends TestCase
     }
 
     /**
-     * @test
      * 認証済みユーザーが有効なトークンでアクセスした場合、200が返ることの確認
      */
+    #[Test]
     public function test_authenticated_user_gets_200(): void
     {
         $user = User::factory()->create();

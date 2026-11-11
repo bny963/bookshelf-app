@@ -7,6 +7,7 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * ユーザーモデルのリレーションシップテスト
@@ -16,9 +17,9 @@ class UserTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * ユーザーがお気に入りの書籍と、いいねしたレビューを正しく保持できること
      */
+    #[Test]
     public function ユーザーはお気に入りの書籍といいねしたレビューを持つことができる(): void
     {
         $user = User::factory()->create();

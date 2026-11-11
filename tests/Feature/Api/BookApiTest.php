@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍関連APIの機能テスト
@@ -15,9 +16,9 @@ class BookApiTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * 書籍一覧取得APIが正しい形式のJSONを返却することを確認
      */
+    #[Test]
     public function APIから書籍一覧が正しい形式で取得できる(): void
     {
         $user = User::factory()->create();
@@ -37,9 +38,9 @@ class BookApiTest extends TestCase
     }
 
     /**
-     * @test
      * バリデーションルールに違反した場合、適切なエラーレスポンスが返却されること
      */
+    #[Test]
     public function 必須項目が欠けているとエラーが返る(): void
     {
         $user = User::factory()->create();

@@ -6,6 +6,7 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * ユーザー読書レポート機能のテストクラス
@@ -15,9 +16,9 @@ class UserReportTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * 認証済みユーザーが自身の読書レポート（レビュー数）を確認できること
      */
+    #[Test]
     public function test_user_can_see_their_own_reading_report(): void
     {
         $user = User::factory()->create();
@@ -32,9 +33,9 @@ class UserReportTest extends TestCase
     }
 
     /**
-     * @test
      * レビューデータが存在しない場合でもエラーにならず正常なレスポンスが返ること
      */
+    #[Test]
     public function test_report_handles_empty_data_gracefully(): void
     {
         $user = User::factory()->create();
