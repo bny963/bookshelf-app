@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍レビュー機能の機能テスト
@@ -27,9 +28,9 @@ class ReviewTest extends TestCase
     }
 
     /**
-     * @test
      * 認証済みユーザーがレビューを新規投稿できること
      */
+    #[Test]
     public function 認証済みユーザーはレビューを投稿できる(): void
     {
         $reviewData = [
@@ -51,9 +52,9 @@ class ReviewTest extends TestCase
     }
 
     /**
-     * @test
      * 認証済みユーザーが自身のレビューを更新できること
      */
+    #[Test]
     public function 認証済みユーザーは自分のレビューを更新できる(): void
     {
         $review = Review::factory()->create([
@@ -79,9 +80,9 @@ class ReviewTest extends TestCase
     }
 
     /**
-     * @test
      * 他人のレビューの更新リクエストは認可エラー（AuthorizationException）になること
      */
+    #[Test]
     public function 他人のレビューは更新できない(): void
     {
         $owner = User::factory()->create();

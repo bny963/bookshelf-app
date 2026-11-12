@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Policies\BookPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍の認可ポリシー（BookPolicy）のテストクラス
@@ -16,9 +17,9 @@ class BookPolicyTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * 書籍の所有者が更新権限を持っていること
      */
+    #[Test]
     public function 所有者は書籍を更新できる(): void
     {
         $user = User::factory()->create();
@@ -28,9 +29,9 @@ class BookPolicyTest extends TestCase
     }
 
     /**
-     * @test
      * 他人は書籍の更新権限を持っていないこと
      */
+    #[Test]
     public function 他人は書籍を更新できない(): void
     {
         $owner = User::factory()->create();
@@ -41,9 +42,9 @@ class BookPolicyTest extends TestCase
     }
 
     /**
-     * @test
      * 書籍の所有者が削除権限を持っていること
      */
+    #[Test]
     public function 所有者は書籍を削除できる(): void
     {
         $user = User::factory()->create();
@@ -53,9 +54,9 @@ class BookPolicyTest extends TestCase
     }
 
     /**
-     * @test
      * 他人は書籍の削除権限を持っていないこと
      */
+    #[Test]
     public function 他人は書籍を削除できない(): void
     {
         $owner = User::factory()->create();
@@ -66,9 +67,9 @@ class BookPolicyTest extends TestCase
     }
 
     /**
-     * @test
      * Policyクラスの各メソッドの挙動を直接検証
      */
+    #[Test]
     public function その他のポリシーも許可または拒否を判定する(): void
     {
         $user = User::factory()->create();

@@ -7,6 +7,7 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * レビューモデルのリレーションシップテスト
@@ -16,9 +17,9 @@ class ReviewTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * レビューがユーザーと書籍に対して正しく「belongsTo」リレーションを持っていること
      */
+    #[Test]
     public function レビューはユーザーと書籍に所属している(): void
     {
         // 1. ユーザーと書籍を作成

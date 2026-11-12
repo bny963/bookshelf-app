@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍CRUDおよび権限の機能テスト
@@ -25,9 +26,9 @@ class BookCrudTest extends TestCase
     }
 
     /**
-     * @test
      * 認証済みユーザーが書籍を新規登録できること
      */
+    #[Test]
     public function 認証済みユーザーは書籍を登録できる(): void
     {
         $genre = Genre::factory()->create();
@@ -48,9 +49,9 @@ class BookCrudTest extends TestCase
     }
 
     /**
-     * @test
      * 認証済みユーザーが自身の書籍を更新できること
      */
+    #[Test]
     public function 認証済みユーザーは書籍を更新できる(): void
     {
         $myBook = Book::factory()->create(['user_id' => $this->user->id]);
@@ -71,9 +72,9 @@ class BookCrudTest extends TestCase
     }
 
     /**
-     * @test
      * 認証済みユーザーが書籍を削除できること
      */
+    #[Test]
     public function 認証済みユーザーは書籍を削除できる(): void
     {
         $book = Book::factory()->create(['user_id' => $this->user->id]);
@@ -86,9 +87,9 @@ class BookCrudTest extends TestCase
     }
 
     /**
-     * @test
      * API経由での書籍登録ができること
      */
+    #[Test]
     public function test_user_can_create_book(): void
     {
         $genre = Genre::factory()->create();
@@ -106,9 +107,9 @@ class BookCrudTest extends TestCase
     }
 
     /**
-     * @test
      * 他人の書籍の更新には権限エラー（403）が返ること
      */
+    #[Test]
     public function test_book_update_policy_authorization(): void
     {
         $other = User::factory()->create();
@@ -131,9 +132,9 @@ class BookCrudTest extends TestCase
     }
 
     /**
-     * @test
      * 他人の書籍の削除には権限エラー（403）が返ること
      */
+    #[Test]
     public function test_book_delete_policy_authorization(): void
     {
         $othersBook = Book::factory()->create(['user_id' => User::factory()->create()->id]);

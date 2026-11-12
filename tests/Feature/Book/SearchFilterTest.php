@@ -7,6 +7,7 @@ use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍の検索・フィルタリング機能のテストクラス
@@ -28,9 +29,9 @@ class SearchFilterTest extends TestCase
     }
 
     /**
-     * @test
      * キーワードおよびジャンルIDによるフィルタリングが正しく動作すること
      */
+    #[Test]
     public function filter_by_keyword_and_genre(): void
     {
         $user = User::factory()->create();
@@ -52,9 +53,9 @@ class SearchFilterTest extends TestCase
     }
 
     /**
-     * @test
      * ページネーション遷移時にもクエリパラメータが維持されること
      */
+    #[Test]
     public function test_pagination_maintains_query_string(): void
     {
         $response = $this->getJson('/api/v1/books?keyword=Laravel&page=2');

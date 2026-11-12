@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * ISBN検索APIの機能テスト
@@ -11,9 +12,9 @@ use Tests\TestCase;
 class IsbnSearchTest extends TestCase
 {
     /**
-     * @test
      * Google Books APIから書籍情報を正常に取得できること
      */
+    #[Test]
     public function test_isbn_search_returns_book_data_successfully(): void
     {
         // Google Books API のレスポンスを偽装
@@ -36,9 +37,9 @@ class IsbnSearchTest extends TestCase
     }
 
     /**
-     * @test
      * 外部APIがエラーを返した場合に適切に404を返却すること
      */
+    #[Test]
     public function test_isbn_search_handles_api_error(): void
     {
         // APIエラー（404 Not Found）をシミュレート
@@ -51,9 +52,9 @@ class IsbnSearchTest extends TestCase
     }
 
     /**
-     * @test
      * ISBNの形式が不正な場合にバリデーションエラー（422）が返却されること
      */
+    #[Test]
     public function test_isbn_search_invalid_format(): void
     {
         // 13桁未満など、バリデーションルールに違反するリクエスト

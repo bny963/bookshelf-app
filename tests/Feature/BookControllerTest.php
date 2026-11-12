@@ -9,6 +9,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍管理機能の機能テスト
@@ -26,9 +27,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 一覧画面が正しく表示されること
      */
+    #[Test]
     public function 一覧画面を表示できる(): void
     {
         $this->actingAs($this->user)
@@ -37,9 +38,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 登録画面が正しく表示されること
      */
+    #[Test]
     public function 登録画面を表示できる(): void
     {
         $this->actingAs($this->user)
@@ -48,9 +49,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 書籍データがデータベースに正しく保存されること
      */
+    #[Test]
     public function 書籍を保存できる(): void
     {
         $genres = Genre::factory()->count(2)->create();
@@ -68,9 +69,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 書籍詳細画面が正しく表示されること
      */
+    #[Test]
     public function 書籍詳細を表示できる(): void
     {
         $book = Book::factory()->create();
@@ -81,9 +82,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 所有している書籍が削除できること
      */
+    #[Test]
     public function 書籍を削除できる(): void
     {
         $book = Book::factory()->create(['user_id' => $this->user->id]);
@@ -94,9 +95,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 外部APIを使用したISBN検索が成功すること
      */
+    #[Test]
     public function ISBN検索で書籍情報が取得できる(): void
     {
         Http::fake([
@@ -112,9 +113,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 検索キーワードとジャンル絞り込みが機能すること
      */
+    #[Test]
     public function 一覧画面でキーワード検索とジャンル絞り込みができる(): void
     {
         $genre = Genre::factory()->create();
@@ -128,9 +129,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 並び替えオプションが正しく動作すること
      */
+    #[Test]
     public function 一覧画面でランキング順などの並び替えができる(): void
     {
         $this->actingAs($this->user)
@@ -143,9 +144,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * 他人の書籍への削除権限がないこと
      */
+    #[Test]
     public function 他人の書籍を削除しようとすると403エラーになる(): void
     {
         $owner = User::factory()->create();
@@ -160,9 +161,9 @@ class BookControllerTest extends TestCase
     }
 
     /**
-     * @test
      * API検索で存在しないISBNを指定した際に404エラーになること
      */
+    #[Test]
     public function 存在しないISBNを検索すると404エラーになる(): void
     {
         Http::fake([

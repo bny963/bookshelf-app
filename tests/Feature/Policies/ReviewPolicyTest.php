@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Policies\ReviewPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * レビューの認可ポリシー（ReviewPolicy）のテストクラス
@@ -16,9 +17,9 @@ class ReviewPolicyTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * レビュー所有者には更新・削除権限があり、他人にはないことを確認
      */
+    #[Test]
     public function レビューの更新と削除の権限を判定できる(): void
     {
         $user = User::factory()->create();

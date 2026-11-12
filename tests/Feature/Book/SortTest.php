@@ -7,6 +7,7 @@ use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * 書籍のソート機能のテストクラス
@@ -16,9 +17,9 @@ class SortTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * @test
      * ソート条件（最新順・古い順）によって書籍一覧の並び順が正しく変わること
      */
+    #[Test]
     public function books_can_be_sorted_by_multiple_criteria(): void
     {
         $user = User::factory()->create();
@@ -38,9 +39,9 @@ class SortTest extends TestCase
     }
 
     /**
-     * @test
      * フィルタリングとソートが併用された場合でもAPIが正常に動作すること
      */
+    #[Test]
     public function sorting_persists_with_filter(): void
     {
         $user = User::factory()->create();
